@@ -93,9 +93,9 @@ const VocabularyChallenge: React.FC = () => {
               className={`flex items-center space-x-2 p-3 rounded-md border cursor-pointer ${
                 isCorrect !== null && option === correctTranslation 
                   ? 'border-green-500 bg-green-50' 
-                  : isCorrect === false && option === correctTranslation
-                  ? 'border-green-500 bg-green-50'
-                  : isCorrect === false && option !== correctTranslation
+                  : isCorrect === false && option === selectedOption
+                  ? 'border-red-500 bg-red-50'
+                  : isCorrect === false && option !== selectedOption
                   ? 'border-gray-200 opacity-50'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
