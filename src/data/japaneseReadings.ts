@@ -1,5 +1,5 @@
 
-import { ReadingPassage } from '@/types/game';
+import { ReadingPassage } from '@/data/readings';
 
 export const japaneseReadings: ReadingPassage[] = [
   {
@@ -32,7 +32,6 @@ export const japaneseReadings: ReadingPassage[] = [
       "間": "while",
       "待って": "waiting",
       "観察した": "observed",
-      "人々": "people",
       "通り過ぎる": "passing by",
       "窓": "window",
       "観光客": "tourists",
@@ -108,7 +107,7 @@ export const japaneseReadings: ReadingPassage[] = [
       "新鮮な": "fresh",
       "少し": "little",
       "牛乳": "milk",
-      "混ぜた": "beat",
+      "混ぜる": "beat",
       "すべて": "everything",
       "まで": "until",
       "なる": "to become",
@@ -126,7 +125,7 @@ export const japaneseReadings: ReadingPassage[] = [
       "オーブン": "oven",
       "分": "minutes",
       "間": "while",
-      "待って": "waiting",
+      "待つ": "waiting",
       "話した": "told",
       "話": "stories",
       "若い頃": "youth",
