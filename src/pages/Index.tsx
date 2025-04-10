@@ -6,9 +6,10 @@ import ComprehensionQuestion from '@/components/ComprehensionQuestion';
 import LookupCounter from '@/components/LookupCounter';
 import GameHeader from '@/components/GameHeader';
 import GameInstructions from '@/components/GameInstructions';
+import VocabularyChallenge from '@/components/VocabularyChallenge';
 
 const GameContent: React.FC = () => {
-  const { startGame, currentPassage } = useGame();
+  const { startGame, currentPassage, isInChallengeMode } = useGame();
   
   useEffect(() => {
     if (!currentPassage) {
@@ -25,13 +26,28 @@ const GameContent: React.FC = () => {
   }
   
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <LookupCounter />
-        <GameInstructions />
+    <div className="flex flex-col md:flex-row gap-6">
+      <div className={`${isInChallengeMode ? 'w-full' : 'w-full md:w-2/3'}`}>
+        {isInChallengeMode ? (
+          <>
+            <VocabularyChallenge />
+            <ComprehensionQuestion />
+          </>
+        ) : (
+          <>
+            <div className="flex justify-end mb-4">
+              <GameInstructions />
+            </div>
+            <ReadingPassage />
+          </>
+        )}
       </div>
-      <ReadingPassage />
-      <ComprehensionQuestion />
+      
+      {!isInChallengeMode && (
+        <div className="w-full md:w-1/3">
+          <LookupCounter />
+        </div>
+      )}
     </div>
   );
 };
@@ -39,7 +55,7 @@ const GameContent: React.FC = () => {
 const Index: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto py-8 px-4 max-w-4xl">
+      <div className="container mx-auto py-8 px-4 max-w-5xl">
         <GameProvider>
           <GameHeader />
           <GameContent />

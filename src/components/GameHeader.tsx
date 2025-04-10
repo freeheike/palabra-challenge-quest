@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { useGame } from '@/context/GameContext';
-import { RefreshCw } from 'lucide-react';
+import { useGame, MAX_HEARTS } from '@/context/GameContext';
+import { RefreshCw, Heart } from 'lucide-react';
 
 const GameHeader: React.FC = () => {
-  const { resetGame } = useGame();
+  const { resetGame, isInChallengeMode, remainingHearts } = useGame();
   
   return (
     <header className="mb-8">
@@ -18,14 +18,26 @@ const GameHeader: React.FC = () => {
             Read, understand, and answer questions in Spanish!
           </p>
         </div>
-        <Button
-          variant="outline"
-          onClick={resetGame}
-          className="flex items-center gap-2"
-        >
-          <RefreshCw className="h-4 w-4" />
-          New Challenge
-        </Button>
+        <div className="flex items-center gap-4">
+          {isInChallengeMode && (
+            <div className="flex">
+              {[...Array(MAX_HEARTS)].map((_, i) => (
+                <Heart 
+                  key={i} 
+                  className={`h-5 w-5 ${i < remainingHearts ? 'text-red-500 fill-red-500' : 'text-gray-300'}`} 
+                />
+              ))}
+            </div>
+          )}
+          <Button
+            variant="outline"
+            onClick={resetGame}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            New Challenge
+          </Button>
+        </div>
       </div>
     </header>
   );

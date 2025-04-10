@@ -8,26 +8,24 @@ interface ClickableWordProps {
 }
 
 const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => {
-  const { lookupWord, usedLookups } = useGame();
+  const { collectWord, collectedWords } = useGame();
   const [translation, setTranslation] = useState<string | null>(null);
   
   // Clean the word for lookup (remove punctuation)
   const cleanWord = word.toLowerCase().replace(/[.,;:!?'"()]/g, '');
   
-  // Check if this word has already been looked up
-  const isLookedUp = usedLookups.includes(cleanWord);
+  // Check if this word has already been collected
+  const isCollected = collectedWords.some(item => item.word === cleanWord);
   
   const handleClick = () => {
-    if (!isLookedUp) {
-      const result = lookupWord(word);
-      if (result) {
-        setTranslation(result);
-      }
+    const result = collectWord(word);
+    if (result) {
+      setTranslation(result);
     }
   };
   
-  // If the word has already been looked up, show tooltip
-  if (isLookedUp && translation) {
+  // If the word has already been collected, show tooltip
+  if (isCollected && translation) {
     return (
       <TooltipProvider>
         <Tooltip>
@@ -50,7 +48,7 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
   // Otherwise, show clickable word
   return (
     <span 
-      className={`cursor-pointer hover:text-spanish-gold transition-colors duration-150 ${isLookedUp ? 'text-spanish-red' : ''}`} 
+      className={`cursor-pointer hover:text-spanish-gold transition-colors duration-150 ${isCollected ? 'text-spanish-red' : ''}`} 
       onClick={handleClick}
     >
       {originalWord}
