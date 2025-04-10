@@ -2,13 +2,11 @@
 import React, { useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { MAX_HEARTS } from '@/constants/game';
-import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Heart, ArrowRight } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 const VocabularyChallenge: React.FC = () => {
   const { collectedWords, currentWordIndex, remainingHearts, checkVocabularyAnswer, nextWord } = useGame();
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   
   const currentWord = collectedWords[currentWordIndex]?.word || '';
@@ -46,9 +44,8 @@ const VocabularyChallenge: React.FC = () => {
   
   const options = generateOptions();
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedOption) return;
+  const handleOptionSelect = (selectedOption: string) => {
+    if (isCorrect !== null) return; // Prevent clicking after an answer is selected
     
     const correct = selectedOption === correctTranslation;
     setIsCorrect(correct);
@@ -56,7 +53,6 @@ const VocabularyChallenge: React.FC = () => {
     
     if (correct) {
       setTimeout(() => {
-        setSelectedOption(null);
         setIsCorrect(null);
         nextWord();
       }, 1000);
@@ -87,21 +83,23 @@ const VocabularyChallenge: React.FC = () => {
         <p className="text-2xl font-bold text-spanish-red">{currentWord}</p>
       </div>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <RadioGroup 
-          value={selectedOption || ""}
-          onValueChange={setSelectedOption}
-          className="gap-3"
-        >
+      <div className="space-y-4">
+        <RadioGroup className="gap-3">
           {options.map((option, idx) => (
-            <div key={idx} className={`flex items-center space-x-2 p-3 rounded-md border ${
-              isCorrect !== null && option === correctTranslation 
-                ? 'border-green-500 bg-green-50' 
-                : isCorrect === false && option === selectedOption
-                ? 'border-red-500 bg-red-50'
-                : 'border-gray-200'
-            }`}>
-              <RadioGroupItem value={option} id={`option-${idx}`} />
+            <div 
+              key={idx} 
+              className={`flex items-center space-x-2 p-3 rounded-md border cursor-pointer ${
+                isCorrect !== null && option === correctTranslation 
+                  ? 'border-green-500 bg-green-50' 
+                  : isCorrect === false && option === correctTranslation
+                  ? 'border-green-500 bg-green-50'
+                  : isCorrect === false && option !== correctTranslation
+                  ? 'border-gray-200 opacity-50'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+              onClick={() => handleOptionSelect(option)}
+            >
+              <RadioGroupItem value={option} id={`option-${idx}`} checked={isCorrect !== null && option === correctTranslation} />
               <label htmlFor={`option-${idx}`} className="text-lg flex-grow cursor-pointer">
                 {option}
               </label>
@@ -113,11 +111,8 @@ const VocabularyChallenge: React.FC = () => {
           <span className="text-sm text-gray-500">
             Word {currentWordIndex + 1} of {collectedWords.length}
           </span>
-          <Button type="submit" disabled={!selectedOption}>
-            Check <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
