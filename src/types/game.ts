@@ -1,5 +1,6 @@
 
-import { ReadingPassage } from '@/data/spanishReadings';
+import { SupportedLanguage } from './language';
+import { ReadingPassage } from '@/data/readings';
 
 export interface CollectedWord {
   word: string;
@@ -15,6 +16,7 @@ export interface GameState {
   isInChallengeMode: boolean;
   remainingHearts: number;
   currentWordIndex: number;
+  currentLanguage: SupportedLanguage;
 }
 
 export interface GameContextType extends GameState {
@@ -27,4 +29,5 @@ export interface GameContextType extends GameState {
   checkVocabularyAnswer: (answer: string) => boolean;
   loseHeart: () => void;
   nextWord: () => void;
+  changeLanguage: (language: SupportedLanguage) => void;
 }

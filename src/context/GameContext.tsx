@@ -1,10 +1,11 @@
 
 import React, { createContext, useContext, useReducer } from 'react';
-import { ReadingPassage, spanishReadings } from '@/data/spanishReadings';
+import { ReadingPassage, spanishReadings, japaneseReadings } from '@/data/readings';
 import { GameContextType } from '@/types/game';
 import { gameReducer, initialGameState } from '@/reducers/gameReducer';
 import { useGameNotifications } from '@/hooks/useGameNotifications';
 import { WORDS_TO_COLLECT } from '@/constants/game';
+import { SupportedLanguage } from '@/types/language';
 
 export { WORDS_TO_COLLECT } from '@/constants/game';
 export { MAX_HEARTS } from '@/constants/game';
@@ -15,22 +16,41 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
   const notifications = useGameNotifications();
 
+  // Get the appropriate readings based on the current language
+  const getReadings = () => {
+    switch (state.currentLanguage) {
+      case 'japanese':
+        return japaneseReadings;
+      case 'spanish':
+      default:
+        return spanishReadings;
+    }
+  };
+
   const startGame = (passageId?: string) => {
+    const readings = getReadings();
     let passage: ReadingPassage;
     
     if (passageId) {
-      const found = spanishReadings.find(p => p.id === passageId);
+      const found = readings.find(p => p.id === passageId);
       if (found) {
         passage = found;
       } else {
-        passage = spanishReadings[0];
+        passage = readings[0];
       }
     } else {
-      const randomIndex = Math.floor(Math.random() * spanishReadings.length);
-      passage = spanishReadings[randomIndex];
+      const randomIndex = Math.floor(Math.random() * readings.length);
+      passage = readings[randomIndex];
     }
     
     dispatch({ type: 'SET_CURRENT_PASSAGE', payload: passage });
+  };
+
+  const changeLanguage = (language: SupportedLanguage) => {
+    dispatch({ type: 'SET_LANGUAGE', payload: language });
+    setTimeout(() => {
+      startGame();
+    }, 0);
   };
 
   const collectWord = (word: string): string | null => {
@@ -91,15 +111,17 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!state.isGameComplete && state.remainingHearts > 0) return;
     
     if (state.currentPassage) {
-      const currentIndex = spanishReadings.findIndex(p => p.id === state.currentPassage!.id);
-      const nextIndex = (currentIndex + 1) % spanishReadings.length;
-      const nextPassage = spanishReadings[nextIndex];
+      const readings = getReadings();
+      const currentIndex = readings.findIndex(p => p.id === state.currentPassage!.id);
+      const nextIndex = (currentIndex + 1) % readings.length;
+      const nextPassage = readings[nextIndex];
       
       startGame(nextPassage.id);
     }
   };
 
   const resetGame = () => {
+    dispatch({ type: 'RESET_GAME' });
     startGame();
   };
   
@@ -139,6 +161,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Initialize game when component mounts
+  React.useEffect(() => {
+    if (!state.currentPassage) {
+      startGame();
+    }
+  }, []);
+
   return (
     <GameContext.Provider 
       value={{
@@ -151,7 +180,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         startChallengeMode,
         checkVocabularyAnswer,
         loseHeart,
-        nextWord
+        nextWord,
+        changeLanguage
       }}
     >
       {children}

@@ -1,7 +1,8 @@
 
 import { GameState } from '@/types/game';
-import { ReadingPassage } from '@/data/spanishReadings';
+import { ReadingPassage } from '@/data/readings';
 import { MAX_HEARTS } from '@/constants/game';
+import { SupportedLanguage } from '@/types/language';
 
 type GameAction =
   | { type: 'SET_CURRENT_PASSAGE'; payload: ReadingPassage }
@@ -12,6 +13,7 @@ type GameAction =
   | { type: 'SET_CHALLENGE_MODE'; payload: boolean }
   | { type: 'DECREASE_HEARTS' }
   | { type: 'SET_CURRENT_WORD_INDEX'; payload: number }
+  | { type: 'SET_LANGUAGE'; payload: SupportedLanguage }
   | { type: 'RESET_GAME' };
 
 export const initialGameState: GameState = {
@@ -22,7 +24,8 @@ export const initialGameState: GameState = {
   isGameComplete: false,
   isInChallengeMode: false,
   remainingHearts: MAX_HEARTS,
-  currentWordIndex: 0
+  currentWordIndex: 0,
+  currentLanguage: 'spanish'
 };
 
 export const gameReducer = (state: GameState, action: GameAction): GameState => {
@@ -30,7 +33,8 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
     case 'SET_CURRENT_PASSAGE':
       return {
         ...initialGameState,
-        currentPassage: action.payload
+        currentPassage: action.payload,
+        currentLanguage: state.currentLanguage
       };
     case 'COLLECT_WORD':
       return {
@@ -69,8 +73,16 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         ...state,
         currentWordIndex: action.payload
       };
+    case 'SET_LANGUAGE':
+      return {
+        ...initialGameState,
+        currentLanguage: action.payload
+      };
     case 'RESET_GAME':
-      return initialGameState;
+      return {
+        ...initialGameState,
+        currentLanguage: state.currentLanguage
+      };
     default:
       return state;
   }

@@ -1,46 +1,55 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { useGame } from '@/context/GameContext';
-import { MAX_HEARTS } from '@/constants/game';
-import { RefreshCw, Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BookOpenCheck, RefreshCcw } from 'lucide-react';
+import { WORDS_TO_COLLECT } from '@/constants/game';
+import LanguageSelector from './LanguageSelector';
 
 const GameHeader: React.FC = () => {
-  const { resetGame, isInChallengeMode, remainingHearts } = useGame();
+  const { 
+    collectedWords, 
+    isInChallengeMode, 
+    startChallengeMode, 
+    resetGame 
+  } = useGame();
+  
+  const hasEnoughWords = collectedWords.length >= WORDS_TO_COLLECT;
   
   return (
-    <header className="mb-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-spanish-text">
-            <span className="text-spanish-red">Palabra</span> Challenge
-          </h1>
-          <p className="text-muted-foreground">
-            Read, understand, and answer questions in Spanish!
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          {isInChallengeMode && (
-            <div className="flex">
-              {[...Array(MAX_HEARTS)].map((_, i) => (
-                <Heart 
-                  key={i} 
-                  className={`h-5 w-5 ${i < remainingHearts ? 'text-red-500 fill-red-500' : 'text-gray-300'}`} 
-                />
-              ))}
-            </div>
-          )}
-          <Button
-            variant="outline"
-            onClick={resetGame}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className="h-4 w-4" />
-            New Challenge
-          </Button>
-        </div>
+    <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+      <div>
+        <h1 className="text-2xl font-bold text-spanish-red">Language Learning Assistant</h1>
+        <p className="text-gray-600">
+          {isInChallengeMode 
+            ? 'Test your knowledge!' 
+            : `Collect ${WORDS_TO_COLLECT} words to unlock the challenge.`}
+        </p>
       </div>
-    </header>
+      
+      <div className="flex items-center gap-2">
+        <LanguageSelector />
+        
+        {!isInChallengeMode && (
+          <Button
+            onClick={startChallengeMode}
+            disabled={!hasEnoughWords}
+            className="bg-spanish-red hover:bg-spanish-red/90"
+          >
+            <BookOpenCheck className="mr-2 h-4 w-4" />
+            Start Challenge
+          </Button>
+        )}
+        
+        <Button 
+          variant="outline" 
+          onClick={resetGame}
+        >
+          <RefreshCcw className="mr-2 h-4 w-4" />
+          New Reading
+        </Button>
+      </div>
+    </div>
   );
 };
 
