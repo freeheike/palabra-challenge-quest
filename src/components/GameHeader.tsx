@@ -2,16 +2,16 @@
 import React from 'react';
 import { useGame } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
-import { BookOpenCheck, RefreshCcw } from 'lucide-react';
+import { BookOpenCheck } from 'lucide-react';
 import { WORDS_TO_COLLECT } from '@/constants/game';
 import LanguageSelector from './LanguageSelector';
+import ReadingSelectionList from './ReadingSelectionList';
 
 const GameHeader: React.FC = () => {
   const { 
     collectedWords, 
     isInChallengeMode, 
-    startChallengeMode, 
-    resetGame 
+    startChallengeMode
   } = useGame();
   
   const hasEnoughWords = collectedWords.length >= WORDS_TO_COLLECT;
@@ -30,6 +30,8 @@ const GameHeader: React.FC = () => {
       <div className="flex items-center gap-2">
         <LanguageSelector />
         
+        <ReadingSelectionList />
+        
         {!isInChallengeMode && (
           <Button
             onClick={startChallengeMode}
@@ -40,14 +42,6 @@ const GameHeader: React.FC = () => {
             Start Challenge
           </Button>
         )}
-        
-        <Button 
-          variant="outline" 
-          onClick={resetGame}
-        >
-          <RefreshCcw className="mr-2 h-4 w-4" />
-          New Reading
-        </Button>
       </div>
     </div>
   );
