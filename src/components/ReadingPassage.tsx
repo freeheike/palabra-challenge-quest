@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ChevronDown, Volume2 } from 'lucide-react';
+import { ArrowRight, Volume2 } from 'lucide-react';
 import { AZURE_CONFIG } from '@/constants/game';
 
 const ReadingPassage: React.FC = () => {
@@ -26,14 +26,6 @@ const ReadingPassage: React.FC = () => {
     }
   };
   
-  const handleShowMore = () => {
-    if (currentSentenceIndex < sentences.length - 1) {
-      const nextIndex = currentSentenceIndex + 1;
-      setCurrentSentenceIndex(nextIndex);
-      setDisplayedSentences([...displayedSentences, nextIndex]);
-    }
-  };
-
   const speakSentence = async (sentenceIndex: number) => {
     try {
       setIsPlaying(sentenceIndex);
@@ -72,6 +64,15 @@ const ReadingPassage: React.FC = () => {
       setIsPlaying(null);
     }
   };
+
+  // Auto-play the sentence when it appears
+  useEffect(() => {
+    if (displayedSentences.length > 0) {
+      const lastSentenceIndex = displayedSentences[displayedSentences.length - 1];
+      speakSentence(lastSentenceIndex);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayedSentences.length]); // Only re-run when displayedSentences changes
   
   return (
     <div className="prose max-w-none">
@@ -124,21 +125,12 @@ const ReadingPassage: React.FC = () => {
         </span>
         <div className="flex gap-2">
           {currentSentenceIndex < sentences.length - 1 && (
-            <>
-              <Button 
-                variant="outline"
-                onClick={handleShowMore} 
-                className="flex items-center gap-1"
-              >
-                <ChevronDown className="h-4 w-4" /> Show More
-              </Button>
-              <Button 
-                onClick={handleReadNext} 
-                className="bg-spanish-red hover:bg-spanish-red/90"
-              >
-                Read Next <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-            </>
+            <Button 
+              onClick={handleReadNext} 
+              className="bg-spanish-red hover:bg-spanish-red/90"
+            >
+              Read Next <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
           )}
         </div>
       </div>
