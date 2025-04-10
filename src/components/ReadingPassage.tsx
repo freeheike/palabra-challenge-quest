@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
@@ -6,7 +7,7 @@ import { ArrowRight, Volume2 } from 'lucide-react';
 import { AZURE_CONFIG } from '@/constants/game';
 
 const ReadingPassage: React.FC = () => {
-  const { currentPassage } = useGame();
+  const { currentPassage, currentLanguage } = useGame();
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [displayedSentences, setDisplayedSentences] = useState<number[]>([0]);
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
@@ -31,6 +32,16 @@ const ReadingPassage: React.FC = () => {
       setIsPlaying(sentenceIndex);
       
       const sentence = sentences[sentenceIndex];
+      
+      // Configure voice settings based on language
+      let voiceName = 'es-ES-AlvaroNeural';
+      let langCode = 'es-ES';
+      
+      if (currentLanguage === 'japanese') {
+        voiceName = 'ja-JP-NanamiNeural';
+        langCode = 'ja-JP';
+      }
+      
       const speechSynthesisRequestOptions = {
         method: 'POST',
         headers: {
@@ -38,7 +49,7 @@ const ReadingPassage: React.FC = () => {
           'Content-Type': 'application/ssml+xml',
           'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3',
         },
-        body: `<speak version='1.0' xml:lang='es-ES'><voice xml:lang='es-ES' name='es-ES-AlvaroNeural'>${sentence}</voice></speak>`
+        body: `<speak version='1.0' xml:lang='${langCode}'><voice xml:lang='${langCode}' name='${voiceName}'>${sentence}</voice></speak>`
       };
 
       const response = await fetch(AZURE_CONFIG.ttsUrl, speechSynthesisRequestOptions);
@@ -90,7 +101,7 @@ const ReadingPassage: React.FC = () => {
                 {words.map((word, wordIndex) => {
                   // If it's a space, render it directly
                   if (/^\s+$/.test(word)) {
-                    return <React.Fragment key={`${sentenceIndex}-${wordIndex}`}>{word}</React.Fragment>;
+                    return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
                   }
                   
                   // Otherwise, it's a word to be made clickable
