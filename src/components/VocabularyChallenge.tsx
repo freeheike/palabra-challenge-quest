@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { useGame, MAX_HEARTS } from '@/context/GameContext';
+import { useGame } from '@/context/GameContext';
+import { MAX_HEARTS } from '@/constants/game';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Heart, ArrowRight } from 'lucide-react';

@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { useGame, WORDS_TO_COLLECT } from '@/context/GameContext';
+import { useGame } from '@/context/GameContext';
+import { WORDS_TO_COLLECT } from '@/constants/game';
 import { Progress } from '@/components/ui/progress';
 import { Book, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';

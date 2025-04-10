@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { useGame, MAX_HEARTS } from '@/context/GameContext';
+import { useGame } from '@/context/GameContext';
+import { MAX_HEARTS } from '@/constants/game';
 import { RefreshCw, Heart } from 'lucide-react';
 
 const GameHeader: React.FC = () => {

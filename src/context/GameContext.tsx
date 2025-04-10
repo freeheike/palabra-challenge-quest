@@ -1,42 +1,19 @@
-import React, { createContext, useContext, useState } from 'react';
-import { ReadingPassage, spanishReadings } from '@/data/spanishReadings';
-import { useToast } from '@/components/ui/use-toast';
 
-interface GameContextType {
-  currentPassage: ReadingPassage | null;
-  collectedWords: Array<{word: string, translation: string}>;
-  selectedAnswer: number | null;
-  isAnswerCorrect: boolean | null;
-  isGameComplete: boolean;
-  isInChallengeMode: boolean;
-  remainingHearts: number;
-  currentWordIndex: number;
-  startGame: (passageId?: string) => void;
-  collectWord: (word: string) => string | null;
-  selectAnswer: (answerIndex: number) => void;
-  nextPassage: () => void;
-  resetGame: () => void;
-  startChallengeMode: () => void;
-  checkVocabularyAnswer: (answer: string) => boolean;
-  loseHeart: () => void;
-  nextWord: () => void;
-}
+import React, { createContext, useContext, useReducer } from 'react';
+import { ReadingPassage, spanishReadings } from '@/data/spanishReadings';
+import { GameContextType } from '@/types/game';
+import { gameReducer, initialGameState } from '@/reducers/gameReducer';
+import { useGameNotifications } from '@/hooks/useGameNotifications';
+import { WORDS_TO_COLLECT } from '@/constants/game';
+
+export { WORDS_TO_COLLECT } from '@/constants/game';
+export { MAX_HEARTS } from '@/constants/game';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-export const WORDS_TO_COLLECT = 10;
-export const MAX_HEARTS = 5;
-
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentPassage, setCurrentPassage] = useState<ReadingPassage | null>(null);
-  const [collectedWords, setCollectedWords] = useState<Array<{word: string, translation: string}>>([]);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
-  const [isGameComplete, setIsGameComplete] = useState(false);
-  const [isInChallengeMode, setIsInChallengeMode] = useState(false);
-  const [remainingHearts, setRemainingHearts] = useState(MAX_HEARTS);
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const { toast } = useToast();
+  const [state, dispatch] = useReducer(gameReducer, initialGameState);
+  const notifications = useGameNotifications();
 
   const startGame = (passageId?: string) => {
     let passage: ReadingPassage;
@@ -53,85 +30,68 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       passage = spanishReadings[randomIndex];
     }
     
-    setCurrentPassage(passage);
-    setCollectedWords([]);
-    setSelectedAnswer(null);
-    setIsAnswerCorrect(null);
-    setIsGameComplete(false);
-    setIsInChallengeMode(false);
-    setRemainingHearts(MAX_HEARTS);
-    setCurrentWordIndex(0);
+    dispatch({ type: 'SET_CURRENT_PASSAGE', payload: passage });
   };
 
   const collectWord = (word: string): string | null => {
-    if (!currentPassage) return null;
+    if (!state.currentPassage) return null;
     
     const cleanWord = word.toLowerCase().replace(/[.,;:!?'"()]/g, '');
     
-    if (collectedWords.some(item => item.word === cleanWord)) {
-      return currentPassage.translations[cleanWord] || null;
+    const existingWord = state.collectedWords.find(item => item.word === cleanWord);
+    if (existingWord) {
+      return state.currentPassage.translations[cleanWord] || null;
     }
     
-    if (collectedWords.length >= WORDS_TO_COLLECT) {
-      toast({
-        title: "¡Excelente!",
-        description: "You've collected enough words! Start the challenge now.",
-      });
-      return currentPassage.translations[cleanWord] || null;
+    if (state.collectedWords.length >= WORDS_TO_COLLECT) {
+      notifications.notifyEnoughWords();
+      return state.currentPassage.translations[cleanWord] || null;
     }
     
-    const translation = currentPassage.translations[cleanWord];
+    const translation = state.currentPassage.translations[cleanWord];
     if (!translation) {
-      toast({
-        title: "No translation available",
-        description: "Sorry, we don't have a translation for this word.",
-      });
+      notifications.notifyNoTranslation();
       return null;
     }
     
-    setCollectedWords(prev => [...prev, {word: cleanWord, translation}]);
-    
-    toast({
-      title: `¡Palabra coleccionada! (${collectedWords.length + 1}/${WORDS_TO_COLLECT})`,
-      description: `${cleanWord}: ${translation}`,
-      variant: "default",
+    dispatch({ 
+      type: 'COLLECT_WORD', 
+      payload: { word: cleanWord, translation } 
     });
+    
+    notifications.notifyWordCollected(
+      cleanWord, 
+      translation, 
+      state.collectedWords.length + 1
+    );
     
     return translation;
   };
 
   const selectAnswer = (answerIndex: number) => {
-    if (isGameComplete) return;
+    if (state.isGameComplete) return;
     
-    setSelectedAnswer(answerIndex);
+    dispatch({ type: 'SELECT_ANSWER', payload: answerIndex });
     
-    if (currentPassage) {
-      const correct = answerIndex === currentPassage.correctAnswer;
-      setIsAnswerCorrect(correct);
+    if (state.currentPassage) {
+      const correct = answerIndex === state.currentPassage.correctAnswer;
+      dispatch({ type: 'SET_ANSWER_CORRECT', payload: correct });
       
       if (correct) {
-        setIsGameComplete(true);
-        toast({
-          title: "¡Correcto!",
-          description: "Great job! You answered correctly.",
-          variant: "default",
-        });
+        dispatch({ type: 'SET_GAME_COMPLETE', payload: true });
+        notifications.notifyCorrectAnswer();
       } else {
         loseHeart();
-        toast({
-          title: "Incorrect",
-          description: "Try again after reviewing the passage.",
-          variant: "destructive",
-        });
+        notifications.notifyIncorrectAnswer();
       }
     }
   };
 
   const nextPassage = () => {
-    if (!isGameComplete) return;
+    if (!state.isGameComplete && state.remainingHearts > 0) return;
     
-    if (currentPassage) {
-      const currentIndex = spanishReadings.findIndex(p => p.id === currentPassage.id);
+    if (state.currentPassage) {
+      const currentIndex = spanishReadings.findIndex(p => p.id === state.currentPassage!.id);
       const nextIndex = (currentIndex + 1) % spanishReadings.length;
       const nextPassage = spanishReadings[nextIndex];
       
@@ -144,22 +104,16 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   
   const startChallengeMode = () => {
-    if (collectedWords.length >= WORDS_TO_COLLECT) {
-      setIsInChallengeMode(true);
-      setCurrentWordIndex(0);
-      setRemainingHearts(MAX_HEARTS);
+    if (state.collectedWords.length >= WORDS_TO_COLLECT) {
+      dispatch({ type: 'SET_CHALLENGE_MODE', payload: true });
     } else {
-      toast({
-        title: "Not enough words collected",
-        description: `You need to collect ${WORDS_TO_COLLECT} words first. Current: ${collectedWords.length}`,
-        variant: "destructive",
-      });
+      notifications.notifyNotEnoughWords(state.collectedWords.length);
     }
   };
   
   const checkVocabularyAnswer = (answer: string): boolean => {
-    if (currentWordIndex < collectedWords.length) {
-      const isCorrect = answer === collectedWords[currentWordIndex].translation;
+    if (state.currentWordIndex < state.collectedWords.length) {
+      const isCorrect = answer === state.collectedWords[state.currentWordIndex].translation;
       if (!isCorrect) {
         loseHeart();
       }
@@ -169,44 +123,26 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   
   const loseHeart = () => {
-    setRemainingHearts(prev => {
-      const newValue = prev - 1;
-      if (newValue <= 0) {
-        toast({
-          title: "Challenge Failed",
-          description: "You've lost all your hearts. Try again!",
-          variant: "destructive",
-        });
-      }
-      return newValue;
-    });
+    dispatch({ type: 'DECREASE_HEARTS' });
+    
+    if (state.remainingHearts <= 1) {
+      notifications.notifyChallengeFailed();
+    }
   };
   
   const nextWord = () => {
-    setCurrentWordIndex(prev => {
-      const newIndex = prev + 1;
-      if (newIndex >= collectedWords.length) {
-        toast({
-          title: "Vocabulary Challenge Complete!",
-          description: "Now try the reading comprehension question.",
-          variant: "default",
-        });
-      }
-      return newIndex;
-    });
+    const newIndex = state.currentWordIndex + 1;
+    dispatch({ type: 'SET_CURRENT_WORD_INDEX', payload: newIndex });
+    
+    if (newIndex >= state.collectedWords.length) {
+      notifications.notifyChallengeComplete();
+    }
   };
 
   return (
     <GameContext.Provider 
       value={{
-        currentPassage,
-        collectedWords,
-        selectedAnswer,
-        isAnswerCorrect,
-        isGameComplete,
-        isInChallengeMode,
-        remainingHearts,
-        currentWordIndex,
+        ...state,
         startGame,
         collectWord,
         selectAnswer,
