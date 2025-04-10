@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { MAX_HEARTS } from '@/constants/game';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Heart } from 'lucide-react';
+import { Heart, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const VocabularyChallenge: React.FC = () => {
   const { collectedWords, currentWordIndex, remainingHearts, checkVocabularyAnswer, nextWord } = useGame();
@@ -50,13 +50,11 @@ const VocabularyChallenge: React.FC = () => {
     const correct = selectedOption === correctTranslation;
     setIsCorrect(correct);
     checkVocabularyAnswer(selectedOption);
-    
-    if (correct) {
-      setTimeout(() => {
-        setIsCorrect(null);
-        nextWord();
-      }, 1000);
-    }
+  };
+  
+  const handleContinue = () => {
+    setIsCorrect(null);
+    nextWord();
   };
   
   // If we've gone through all words
@@ -106,6 +104,18 @@ const VocabularyChallenge: React.FC = () => {
             </div>
           ))}
         </RadioGroup>
+        
+        {isCorrect === true && (
+          <div className="flex justify-center mt-4">
+            <Button 
+              onClick={handleContinue}
+              className="bg-spanish-red hover:bg-spanish-red/90"
+            >
+              Continue
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        )}
         
         <div className="flex justify-between">
           <span className="text-sm text-gray-500">
