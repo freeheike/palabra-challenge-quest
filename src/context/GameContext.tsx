@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from 'react';
 import { ReadingPassage, spanishReadings } from '@/data/spanishReadings';
 import { useToast } from '@/components/ui/use-toast';
@@ -50,7 +49,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         passage = spanishReadings[0];
       }
     } else {
-      // Select a random passage
       const randomIndex = Math.floor(Math.random() * spanishReadings.length);
       passage = spanishReadings[randomIndex];
     }
@@ -68,15 +66,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const collectWord = (word: string): string | null => {
     if (!currentPassage) return null;
     
-    // Clean up the word (remove punctuation, make lowercase)
     const cleanWord = word.toLowerCase().replace(/[.,;:!?'"()]/g, '');
     
-    // Check if word is already collected
     if (collectedWords.some(item => item.word === cleanWord)) {
       return currentPassage.translations[cleanWord] || null;
     }
     
-    // Check if we already have the maximum number of words
     if (collectedWords.length >= WORDS_TO_COLLECT) {
       toast({
         title: "¡Excelente!",
@@ -85,7 +80,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return currentPassage.translations[cleanWord] || null;
     }
     
-    // Check if the word has a translation
     const translation = currentPassage.translations[cleanWord];
     if (!translation) {
       toast({
@@ -95,7 +89,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return null;
     }
     
-    // Collect the word
     setCollectedWords(prev => [...prev, {word: cleanWord, translation}]);
     
     toast({
@@ -137,7 +130,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const nextPassage = () => {
     if (!isGameComplete) return;
     
-    // Find next passage
     if (currentPassage) {
       const currentIndex = spanishReadings.findIndex(p => p.id === currentPassage.id);
       const nextIndex = (currentIndex + 1) % spanishReadings.length;
@@ -167,7 +159,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const checkVocabularyAnswer = (answer: string): boolean => {
     if (currentWordIndex < collectedWords.length) {
-      const isCorrect = answer.toLowerCase().trim() === collectedWords[currentWordIndex].translation.toLowerCase().trim();
+      const isCorrect = answer === collectedWords[currentWordIndex].translation;
       if (!isCorrect) {
         loseHeart();
       }
@@ -194,7 +186,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentWordIndex(prev => {
       const newIndex = prev + 1;
       if (newIndex >= collectedWords.length) {
-        // If we've gone through all words, go to reading comprehension test
         toast({
           title: "Vocabulary Challenge Complete!",
           description: "Now try the reading comprehension question.",

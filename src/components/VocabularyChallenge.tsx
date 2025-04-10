@@ -1,27 +1,61 @@
 
 import React, { useState } from 'react';
 import { useGame, MAX_HEARTS } from '@/context/GameContext';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Heart, ArrowRight } from 'lucide-react';
 
 const VocabularyChallenge: React.FC = () => {
   const { collectedWords, currentWordIndex, remainingHearts, checkVocabularyAnswer, nextWord } = useGame();
-  const [userAnswer, setUserAnswer] = useState('');
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   
   const currentWord = collectedWords[currentWordIndex]?.word || '';
+  const correctTranslation = collectedWords[currentWordIndex]?.translation || '';
+  
+  // Generate 3 random incorrect options from other collected words
+  const generateOptions = () => {
+    const correctAnswer = correctTranslation;
+    const options = [correctAnswer];
+    
+    // Copy the translations and filter out the correct one
+    const otherTranslations = collectedWords
+      .filter((_, idx) => idx !== currentWordIndex)
+      .map(word => word.translation);
+    
+    // If we don't have enough words yet, add some default wrong answers
+    const defaultOptions = ['house', 'car', 'dog', 'tree', 'book', 'family', 'food', 'city'];
+    
+    // Shuffle and pick alternatives
+    const alternativePool = [...otherTranslations, ...defaultOptions];
+    const shuffled = [...alternativePool].sort(() => 0.5 - Math.random());
+    
+    // Add unique options until we have 4 total
+    for (const option of shuffled) {
+      if (options.length < 4 && !options.includes(option)) {
+        options.push(option);
+      }
+      
+      if (options.length === 4) break;
+    }
+    
+    // Shuffle the options so the correct answer isn't always first
+    return options.sort(() => 0.5 - Math.random());
+  };
+  
+  const options = generateOptions();
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userAnswer.trim()) return;
+    if (!selectedOption) return;
     
-    const correct = checkVocabularyAnswer(userAnswer);
+    const correct = selectedOption === correctTranslation;
     setIsCorrect(correct);
+    checkVocabularyAnswer(selectedOption);
     
     if (correct) {
       setTimeout(() => {
-        setUserAnswer('');
+        setSelectedOption(null);
         setIsCorrect(null);
         nextWord();
       }, 1000);
@@ -53,22 +87,32 @@ const VocabularyChallenge: React.FC = () => {
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
-          type="text"
-          value={userAnswer}
-          onChange={(e) => setUserAnswer(e.target.value)}
-          placeholder="Type the English translation..."
-          className={`text-center ${
-            isCorrect === true ? 'border-green-500 bg-green-50' : 
-            isCorrect === false ? 'border-red-500 bg-red-50' : ''
-          }`}
-        />
+        <RadioGroup 
+          value={selectedOption || ""}
+          onValueChange={setSelectedOption}
+          className="gap-3"
+        >
+          {options.map((option, idx) => (
+            <div key={idx} className={`flex items-center space-x-2 p-3 rounded-md border ${
+              isCorrect !== null && option === correctTranslation 
+                ? 'border-green-500 bg-green-50' 
+                : isCorrect === false && option === selectedOption
+                ? 'border-red-500 bg-red-50'
+                : 'border-gray-200'
+            }`}>
+              <RadioGroupItem value={option} id={`option-${idx}`} />
+              <label htmlFor={`option-${idx}`} className="text-lg flex-grow cursor-pointer">
+                {option}
+              </label>
+            </div>
+          ))}
+        </RadioGroup>
         
         <div className="flex justify-between">
           <span className="text-sm text-gray-500">
             Word {currentWordIndex + 1} of {collectedWords.length}
           </span>
-          <Button type="submit">
+          <Button type="submit" disabled={!selectedOption}>
             Check <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>

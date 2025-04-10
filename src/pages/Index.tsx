@@ -26,28 +26,27 @@ const GameContent: React.FC = () => {
   }
   
   return (
-    <div className="flex flex-col md:flex-row gap-6">
-      <div className={`${isInChallengeMode ? 'w-full' : 'w-full md:w-2/3'}`}>
-        {isInChallengeMode ? (
-          <>
+    <div className="flex flex-col gap-6">
+      <div className="flex justify-end mb-4">
+        {!isInChallengeMode && <GameInstructions />}
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="w-full md:w-2/3">
+          <ReadingPassage />
+        </div>
+        
+        {!isInChallengeMode ? (
+          <div className="w-full md:w-1/3">
+            <LookupCounter />
+          </div>
+        ) : (
+          <div className="w-full md:w-1/3">
             <VocabularyChallenge />
             <ComprehensionQuestion />
-          </>
-        ) : (
-          <>
-            <div className="flex justify-end mb-4">
-              <GameInstructions />
-            </div>
-            <ReadingPassage />
-          </>
+          </div>
         )}
       </div>
-      
-      {!isInChallengeMode && (
-        <div className="w-full md:w-1/3">
-          <LookupCounter />
-        </div>
-      )}
     </div>
   );
 };
