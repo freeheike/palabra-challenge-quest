@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { MAX_HEARTS } from '@/constants/game';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 
 const VocabularyChallenge: React.FC = () => {
   const { collectedWords, currentWordIndex, remainingHearts, checkVocabularyAnswer, nextWord } = useGame();
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   
   const currentWord = collectedWords[currentWordIndex]?.word || '';
@@ -47,6 +49,7 @@ const VocabularyChallenge: React.FC = () => {
   const handleOptionSelect = (selectedOption: string) => {
     if (isCorrect !== null) return; // Prevent clicking after an answer is selected
     
+    setSelectedOption(selectedOption);
     const correct = selectedOption === correctTranslation;
     setIsCorrect(correct);
     checkVocabularyAnswer(selectedOption);
@@ -54,6 +57,7 @@ const VocabularyChallenge: React.FC = () => {
   
   const handleContinue = () => {
     setIsCorrect(null);
+    setSelectedOption(null);
     nextWord();
   };
   
@@ -82,7 +86,7 @@ const VocabularyChallenge: React.FC = () => {
       </div>
       
       <div className="space-y-4">
-        <RadioGroup className="gap-3">
+        <RadioGroup value={selectedOption || ''} className="gap-3">
           {options.map((option, idx) => (
             <div 
               key={idx} 
@@ -97,7 +101,7 @@ const VocabularyChallenge: React.FC = () => {
               }`}
               onClick={() => handleOptionSelect(option)}
             >
-              <RadioGroupItem value={option} id={`option-${idx}`} checked={isCorrect !== null && option === correctTranslation} />
+              <RadioGroupItem value={option} id={`option-${idx}`} checked={selectedOption === option} />
               <label htmlFor={`option-${idx}`} className="text-lg flex-grow cursor-pointer">
                 {option}
               </label>
