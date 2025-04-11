@@ -1,16 +1,22 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Volume2 } from 'lucide-react';
+import { ArrowRight, Volume2, Globe } from 'lucide-react';
 import { AZURE_CONFIG } from '@/constants/game';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const ReadingPassage: React.FC = () => {
   const { currentPassage, currentLanguage, highlightedSentenceIndex } = useGame();
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [displayedSentences, setDisplayedSentences] = useState<number[]>([0]);
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
+  const [translatedSentences, setTranslatedSentences] = useState<Record<number, string>>({});
   const highlightedSentenceRef = useRef<HTMLSpanElement>(null);
   
   if (!currentPassage) {
@@ -97,6 +103,61 @@ const ReadingPassage: React.FC = () => {
     }
   };
 
+  const translateSentence = (sentenceIndex: number) => {
+    if (translatedSentences[sentenceIndex]) {
+      // If translation exists, toggle it off
+      setTranslatedSentences(prev => {
+        const newTranslations = { ...prev };
+        delete newTranslations[sentenceIndex];
+        return newTranslations;
+      });
+    } else {
+      // If no translation exists, generate one
+      const sentence = sentences[sentenceIndex];
+      const words = sentence.match(/\S+|\s+/g) || [];
+      
+      // Create translation by looking up each word in the translations dictionary
+      let translation = "";
+      let currentWord = "";
+      
+      words.forEach(word => {
+        if (/^\s+$/.test(word)) {
+          // If it's a space, add it directly to the translation
+          translation += word;
+        } else {
+          // Clean the word to remove punctuation for lookup
+          const cleanWord = word.toLowerCase().replace(/[.,;:!?'"()]/g, '');
+          
+          // Only update currentWord if it's not empty (to avoid matching empty strings)
+          if (cleanWord) {
+            currentWord = cleanWord;
+          }
+          
+          // Try to find the translation
+          const translatedWord = currentPassage.translations[currentWord];
+          
+          if (translatedWord) {
+            // Replace the original word with its translation, preserving punctuation
+            const punctuation = word.match(/[.,;:!?'"()]/g) || [];
+            translation += translatedWord + punctuation.join('');
+          } else {
+            // If no translation found, use the original word
+            translation += word;
+          }
+          
+          // Add a space after each word unless it's the last word
+          translation += " ";
+        }
+      });
+      
+      // Update the state with the new translation
+      setTranslatedSentences(prev => ({
+        ...prev,
+        [sentenceIndex]: translation.trim()
+      }));
+    }
+  };
+
   // Auto-play the sentence when it appears
   useEffect(() => {
     if (displayedSentences.length > 0) {
@@ -127,40 +188,65 @@ const ReadingPassage: React.FC = () => {
           const words = sentence.match(/\S+|\s+/g) || [];
           
           return (
-            <span 
-              key={sentenceIndex} 
-              className={`flex items-start group ${highlightedSentenceIndex === sentenceIndex ? 'bg-yellow-100 -mx-2 px-2 py-1 rounded-md' : ''}`}
-              ref={highlightedSentenceIndex === sentenceIndex ? highlightedSentenceRef : null}
-            >
-              <span>
-                {words.map((word, wordIndex) => {
-                  // If it's a space, render it directly
-                  if (/^\s+$/.test(word)) {
-                    return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
-                  }
-                  
-                  // Otherwise, it's a word to be made clickable
-                  return (
-                    <ClickableWord 
-                      key={`${sentenceIndex}-${wordIndex}`}
-                      word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
-                      originalWord={word}
-                    />
-                  );
-                })}
-              </span>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="ml-1 opacity-70 hover:opacity-100 h-6 w-6 mt-1 focus:ring-0" 
-                onClick={() => speakSentence(sentenceIndex)}
-                disabled={isPlaying !== null}
+            <div key={sentenceIndex} className="mb-4 last:mb-0">
+              <span 
+                className={`flex items-start group ${highlightedSentenceIndex === sentenceIndex ? 'bg-yellow-100 -mx-2 px-2 py-1 rounded-md' : ''}`}
+                ref={highlightedSentenceIndex === sentenceIndex ? highlightedSentenceRef : null}
               >
-                <Volume2 
-                  className={`h-4 w-4 ${isPlaying === sentenceIndex ? 'text-spanish-red animate-pulse' : 'text-spanish-text'}`} 
-                />
-              </Button>
-            </span>
+                <span className="flex-grow">
+                  {words.map((word, wordIndex) => {
+                    // If it's a space, render it directly
+                    if (/^\s+$/.test(word)) {
+                      return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
+                    }
+                    
+                    // Otherwise, it's a word to be made clickable
+                    return (
+                      <ClickableWord 
+                        key={`${sentenceIndex}-${wordIndex}`}
+                        word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
+                        originalWord={word}
+                      />
+                    );
+                  })}
+                </span>
+                <div className="flex items-center ml-1 space-x-1">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="opacity-70 hover:opacity-100 h-6 w-6 mt-1 focus:ring-0" 
+                    onClick={() => speakSentence(sentenceIndex)}
+                    disabled={isPlaying !== null}
+                  >
+                    <Volume2 
+                      className={`h-4 w-4 ${isPlaying === sentenceIndex ? 'text-spanish-red animate-pulse' : 'text-spanish-text'}`} 
+                    />
+                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="opacity-70 hover:opacity-100 h-6 w-6 mt-1 focus:ring-0"
+                        onClick={() => translateSentence(sentenceIndex)}
+                      >
+                        <Globe className={`h-4 w-4 ${translatedSentences[sentenceIndex] ? 'text-spanish-red' : 'text-spanish-text'}`} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Translate sentence</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              </span>
+              
+              {/* Show translation if available */}
+              {translatedSentences[sentenceIndex] && (
+                <div className="mt-1 text-gray-600 italic bg-gray-50 p-2 rounded text-sm">
+                  {translatedSentences[sentenceIndex]}
+                </div>
+              )}
+            </div>
           );
         })}
       </div>
