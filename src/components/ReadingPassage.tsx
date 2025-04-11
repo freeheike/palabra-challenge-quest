@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
@@ -31,7 +30,7 @@ const ReadingPassage: React.FC = () => {
     try {
       setIsPlaying(sentenceIndex);
       
-      const sentence = sentences[sentenceIndex];
+      let sentence = sentences[sentenceIndex];
       
       // Configure voice settings based on language
       let voiceName = 'es-ES-AlvaroNeural';
@@ -40,6 +39,26 @@ const ReadingPassage: React.FC = () => {
       if (currentLanguage === 'japanese') {
         voiceName = 'ja-JP-NanamiNeural';
         langCode = 'ja-JP';
+        
+        // Special handling for Japanese particles
+        // This helps with proper pronunciation of particles like "wa" (は) and "wo" (を)
+        // Replace common particle patterns that might be mispronounced
+        sentence = sentence
+          .replace(/ wa /g, " は ") // Replace "wa" particle with actual hiragana
+          .replace(/ wo /g, " を ") // Replace "wo" particle with actual hiragana
+          .replace(/ ni /g, " に ") // ni particle
+          .replace(/ ga /g, " が ") // ga particle
+          .replace(/ no /g, " の ") // no particle
+          .replace(/ e /g, " へ ")   // e/he particle
+          .replace(/ de /g, " で ")  // de particle
+          .replace(/ to /g, " と ")  // to particle
+          .replace(/ mo /g, " も ")  // mo particle
+          .replace(/ ka /g, " か ")  // ka question particle
+          .replace(/ yo /g, " よ ")  // yo emphasis particle
+          .replace(/ ne /g, " ね ")  // ne confirmation particle
+          .replace(/ na /g, " な ")  // na prohibitive particle
+          .replace(/ kara /g, " から ") // kara (from/because) particle
+          .replace(/ made /g, " まで "); // made (until) particle
       }
       
       const speechSynthesisRequestOptions = {
