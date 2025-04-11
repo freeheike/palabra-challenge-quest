@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Volume2, Globe, Languages } from 'lucide-react';
+import { ArrowRight, Volume2, Languages } from 'lucide-react';
 import { AZURE_CONFIG } from '@/constants/game';
 import { 
   Tooltip,
@@ -295,7 +295,7 @@ const ReadingPassage: React.FC = () => {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Translate paragraph</p>
+                    <p>翻译段落</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -341,30 +341,8 @@ const ReadingPassage: React.FC = () => {
                               className={`h-4 w-4 ${isPlaying === sentenceIndex ? 'text-spanish-red animate-pulse' : 'text-spanish-text'}`} 
                             />
                           </Button>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="opacity-70 hover:opacity-100 h-6 w-6 mt-1 focus:ring-0"
-                                onClick={() => translateSentence(sentenceIndex)}
-                              >
-                                <Globe className={`h-4 w-4 ${translatedSentences[sentenceIndex] ? 'text-spanish-red' : 'text-spanish-text'}`} />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Translate sentence</p>
-                            </TooltipContent>
-                          </Tooltip>
                         </div>
                       </span>
-                      
-                      {/* Show sentence translation if available */}
-                      {translatedSentences[sentenceIndex] && (
-                        <div className="mt-1 text-gray-600 italic bg-gray-50 p-2 rounded text-sm">
-                          {translatedSentences[sentenceIndex]}
-                        </div>
-                      )}
                     </div>
                   );
                 })}
@@ -373,7 +351,7 @@ const ReadingPassage: React.FC = () => {
               {/* Show paragraph translation if available */}
               {translatedParagraphs[paragraphIndex] && (
                 <div className="mt-2 mb-4 text-gray-600 italic bg-gray-100 p-3 rounded-md text-sm border-l-4 border-spanish-red">
-                  <h4 className="text-xs uppercase text-gray-500 mb-1 font-semibold">Paragraph Translation</h4>
+                  <h4 className="text-xs uppercase text-gray-500 mb-1 font-semibold">中文翻译</h4>
                   {translatedParagraphs[paragraphIndex]}
                 </div>
               )}
