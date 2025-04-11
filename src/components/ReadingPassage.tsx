@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
@@ -65,18 +66,21 @@ const japaneseToRomaji = (text: string): string => {
     '暖かい': 'atatakai', '涼しい': 'suzushii', '雨': 'ame',
     '雪': 'yuki', '風': 'kaze', '太陽': 'taiyou',
     'おばあちゃん': 'obaachan', 'レシピ': 'reshipi', '毎週': 'maishuu', '日曜日': 'nichiyoubi',
-    '特別': 'tokubetsu', 'チョコレート': 'chokoreeto', 'ケーキ': 'keeki', '作っていました': 'tsukutte imashita',
+    '特別': 'tokubetsu', 'チョコレート': 'chokoreeto', 'ケーキ': 'keeki', 
     '大きな': 'ookina', 'ボウル': 'bouru', '小麦粉': 'komugiko', '砂糖': 'satou', 'ココア': 'kokoa',
     '混ぜました': 'mazemashita', '次に': 'tsugi ni', '新鮮な': 'shinsen na', '卵': 'tamago', '少し': 'sukoshi',
     '牛乳': 'gyuunyuu', '加えました': 'kuwaemashita', '滑らかな': 'nameraka na', '混合物': 'kongoubutsu',
     'なるまで': 'naru made', '全て': 'subete', '秘密': 'himitsu', 'シナモン': 'shinamon',
     'バニラ': 'banira', '数滴': 'suuteki', '注ぎ': 'sosogi', '形': 'kata', 'オーブン': 'oobun',
-    '分間': 'funkan', '待っている': 'matte iru', '若い頃': 'wakai koro', '話': 'hanashi', '話してくれました': 'hanashite kuremashita',
+    '分間': 'funkan', '待っている': 'matte iru', '若い頃': 'wakai koro', '話': 'hanashi', 
     '甘い': 'amai', '香り': 'kaori', '広がり': 'hirogari', '家中': 'iejuu', '口': 'kuchi',
     'させました': 'sasemashita', '完成': 'kansei', '冷ました': 'samashita', '前に': 'mae ni',
-    'かける': 'kakeru', 'アイシング': 'aishingu', 'いつも': 'itsumo', '飾り付けました': 'kazaritsukemashita',
+    'かける': 'kakeru', 'アイシング': 'aishingu', 'いつも': 'itsumo', 
     '新鮮な': 'shinsen na', 'フルーツ': 'furuutsu', '共有': 'kyouyuu', '時間': 'jikan', '部分': 'bubun',
-    'お気に入り': 'okiniiri', '週': 'shuu'
+    'お気に入り': 'okiniiri', '週': 'shuu',
+    '作っていました': 'tsukutte imashita',
+    '話してくれました': 'hanashite kuremashita',
+    '飾り付けました': 'kazaritsukemashita'
   };
 
   let romaji = "";
