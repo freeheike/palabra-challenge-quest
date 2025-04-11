@@ -107,6 +107,26 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const highlightSentenceWithWord = (word: string) => {
+    if (!state.currentPassage) return;
+    
+    const sentences = state.currentPassage.text.split(/(?<=[.!?])\s+/);
+    const lowerCaseWord = word.toLowerCase();
+    
+    // Find the first sentence that contains the word
+    const sentenceIndex = sentences.findIndex(sentence => {
+      // Remove punctuation and make lowercase for comparison
+      const cleanedSentence = sentence.toLowerCase().replace(/[.,;:!?'"()]/g, ' ');
+      // Check for the whole word, not partial matches
+      const words = cleanedSentence.split(/\s+/);
+      return words.some(w => w === lowerCaseWord);
+    });
+    
+    if (sentenceIndex !== -1) {
+      dispatch({ type: 'SET_HIGHLIGHTED_SENTENCE', payload: sentenceIndex });
+    }
+  };
+
   const nextPassage = () => {
     if (!state.isGameComplete && state.remainingHearts > 0) return;
     
@@ -155,6 +175,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const nextWord = () => {
     const newIndex = state.currentWordIndex + 1;
     dispatch({ type: 'SET_CURRENT_WORD_INDEX', payload: newIndex });
+    dispatch({ type: 'SET_HIGHLIGHTED_SENTENCE', payload: null });
     
     if (newIndex >= state.collectedWords.length) {
       notifications.notifyChallengeComplete();
@@ -181,7 +202,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         checkVocabularyAnswer,
         loseHeart,
         nextWord,
-        changeLanguage
+        changeLanguage,
+        highlightSentenceWithWord
       }}
     >
       {children}

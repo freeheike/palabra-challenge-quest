@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
@@ -6,10 +7,11 @@ import { ArrowRight, Volume2 } from 'lucide-react';
 import { AZURE_CONFIG } from '@/constants/game';
 
 const ReadingPassage: React.FC = () => {
-  const { currentPassage, currentLanguage } = useGame();
+  const { currentPassage, currentLanguage, highlightedSentenceIndex } = useGame();
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [displayedSentences, setDisplayedSentences] = useState<number[]>([0]);
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
+  const highlightedSentenceRef = useRef<HTMLSpanElement>(null);
   
   if (!currentPassage) {
     return <div>Loading passage...</div>;
@@ -104,18 +106,32 @@ const ReadingPassage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayedSentences.length]); // Only re-run when displayedSentences changes
   
+  // Scroll to highlighted sentence when in quiz mode
+  useEffect(() => {
+    if (highlightedSentenceIndex !== null && highlightedSentenceRef.current) {
+      highlightedSentenceRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }
+  }, [highlightedSentenceIndex]);
+  
   return (
     <div className="prose max-w-none">
       <h2 className="text-2xl font-semibold text-spanish-text mb-4">{currentPassage.title}</h2>
       
-      <div className="text-lg leading-relaxed bg-spanish-background p-6 rounded-lg shadow-md min-h-[200px]">
+      <div className="text-lg leading-relaxed bg-spanish-background p-6 rounded-lg shadow-md min-h-[200px] max-h-[500px] overflow-y-auto">
         {displayedSentences.map((sentenceIndex) => {
           const sentence = sentences[sentenceIndex];
           // Split the sentence into words, preserving spaces and punctuation
           const words = sentence.match(/\S+|\s+/g) || [];
           
           return (
-            <span key={sentenceIndex} className="flex items-start group">
+            <span 
+              key={sentenceIndex} 
+              className={`flex items-start group ${highlightedSentenceIndex === sentenceIndex ? 'bg-yellow-100 -mx-2 px-2 py-1 rounded-md' : ''}`}
+              ref={highlightedSentenceIndex === sentenceIndex ? highlightedSentenceRef : null}
+            >
               <span>
                 {words.map((word, wordIndex) => {
                   // If it's a space, render it directly

@@ -17,6 +17,7 @@ export interface GameState {
   remainingHearts: number;
   currentWordIndex: number;
   currentLanguage: SupportedLanguage;
+  highlightedSentenceIndex: number | null;
 }
 
 export interface GameContextType extends GameState {
@@ -30,4 +31,5 @@ export interface GameContextType extends GameState {
   loseHeart: () => void;
   nextWord: () => void;
   changeLanguage: (language: SupportedLanguage) => void;
+  highlightSentenceWithWord: (word: string) => void;
 }

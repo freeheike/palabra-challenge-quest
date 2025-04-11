@@ -14,6 +14,7 @@ type GameAction =
   | { type: 'DECREASE_HEARTS' }
   | { type: 'SET_CURRENT_WORD_INDEX'; payload: number }
   | { type: 'SET_LANGUAGE'; payload: SupportedLanguage }
+  | { type: 'SET_HIGHLIGHTED_SENTENCE'; payload: number | null }
   | { type: 'RESET_GAME' };
 
 export const initialGameState: GameState = {
@@ -25,7 +26,8 @@ export const initialGameState: GameState = {
   isInChallengeMode: false,
   remainingHearts: MAX_HEARTS,
   currentWordIndex: 0,
-  currentLanguage: 'spanish'
+  currentLanguage: 'spanish',
+  highlightedSentenceIndex: null
 };
 
 export const gameReducer = (state: GameState, action: GameAction): GameState => {
@@ -61,7 +63,8 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         ...state,
         isInChallengeMode: action.payload,
         currentWordIndex: 0,
-        remainingHearts: MAX_HEARTS
+        remainingHearts: MAX_HEARTS,
+        highlightedSentenceIndex: null
       };
     case 'DECREASE_HEARTS':
       return {
@@ -77,6 +80,11 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       return {
         ...initialGameState,
         currentLanguage: action.payload
+      };
+    case 'SET_HIGHLIGHTED_SENTENCE':
+      return {
+        ...state,
+        highlightedSentenceIndex: action.payload
       };
     case 'RESET_GAME':
       return {
