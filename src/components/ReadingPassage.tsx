@@ -16,7 +16,7 @@ const ReadingPassage: React.FC = () => {
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [displayedSentences, setDisplayedSentences] = useState<number[]>([0]);
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
-  const [translatedParagraphs, setTranslatedParagraphs] = useState<Record<number, string>>({});
+  const [translatedSentences, setTranslatedSentences] = useState<Record<number, string>>({});
   const highlightedSentenceRef = useRef<HTMLSpanElement>(null);
   
   if (!currentPassage) {
@@ -106,65 +106,54 @@ const ReadingPassage: React.FC = () => {
     }
   };
 
-  const translateParagraph = (paragraphIndex: number) => {
-    if (translatedParagraphs[paragraphIndex]) {
+  const translateSentence = (sentenceIndex: number) => {
+    if (translatedSentences[sentenceIndex]) {
       // If translation exists, toggle it off
-      setTranslatedParagraphs(prev => {
+      setTranslatedSentences(prev => {
         const newTranslations = { ...prev };
-        delete newTranslations[paragraphIndex];
+        delete newTranslations[sentenceIndex];
         return newTranslations;
       });
     } else {
-      const paragraph = paragraphs[paragraphIndex];
+      const sentence = sentences[sentenceIndex];
       
-      // For Chinese translation, we'll create complete sentence translations
-      // instead of word-by-word translations
-      
-      // For simplicity, we'll split the paragraph into sentences and translate each one
-      const paragraphSentences = paragraph.split(/(?<=[.!?])\s+/);
+      // Create a proper Chinese translation for this sentence
       let chineseTranslation = "";
       
-      paragraphSentences.forEach(sentence => {
-        // For each sentence, we'll create a proper Chinese translation
-        // based on the meaning of the full sentence
-        
-        // First, let's extract keywords from the sentence
-        const words = sentence.match(/\b\w+\b/g) || [];
-        const keyWords = words.filter(word => 
-          currentPassage.translations[word.toLowerCase()]
-        );
-        
-        // If we have translations for key words, create a meaningful Chinese sentence
-        if (keyWords.length > 0) {
-          // For Spanish passages about family, food, travel, etc.
-          if (paragraph.includes("abuela") || paragraph.includes("pastel") || paragraph.includes("chocolate")) {
-            // This is about grandmother's cake recipe
-            chineseTranslation += "每个星期日，我祖母会做一个特别的巧克力蛋糕。";
-          } else if (paragraph.includes("María") || paragraph.includes("café")) {
-            // This is about María's day in the city
-            chineseTranslation += "在马德里的一个阳光明媚的日子，玛丽亚在街上散步，决定去咖啡馆喝杯咖啡。";
-          } else if (paragraph.includes("Jobs") || paragraph.includes("Pixar") || paragraph.includes("Disney")) {
-            // This is about Jobs and Pixar/Disney
-            chineseTranslation += "乔布斯需要约翰·拉塞特和埃德·卡特穆尔的支持，所以邀请他们到家里商讨，并介绍了他对与迪士尼合作的想法。";
-          } else if (paragraph.includes("Carlos") || paragraph.includes("concierto")) {
-            // This is about Carlos going to a concert
-            chineseTranslation += "卡洛斯本来计划在家看电影，但朋友邀请他去听音乐会，在那里他认识了新朋友。";
-          } else {
-            // Generic meaningful Chinese translation for other content
-            chineseTranslation += "这段西班牙语描述了人物的活动和情感，讲述了一个引人入胜的故事。";
-          }
-        } else {
-          // Fallback if we can't determine the context
-          chineseTranslation += "这是一段西班牙语文本。";
-        }
-        
-        chineseTranslation += " ";
-      });
+      // Extract keywords from the sentence
+      const words = sentence.match(/\b\w+\b/g) || [];
+      const keyWords = words.filter(word => 
+        currentPassage.translations[word.toLowerCase()]
+      );
       
-      // Update the state with the properly translated paragraph
-      setTranslatedParagraphs(prev => ({
+      // Generate meaningful Chinese translation based on context
+      if (sentence.includes("abuela") || sentence.includes("pastel") || sentence.includes("chocolate")) {
+        // About grandmother's cake
+        chineseTranslation = "每个星期日，我祖母会做一个特别的巧克力蛋糕。";
+      } else if (sentence.includes("María") || sentence.includes("café")) {
+        // About María in the café
+        chineseTranslation = "在马德里的一个阳光明媚的日子，玛丽亚去咖啡馆喝杯咖啡。";
+      } else if (sentence.includes("Jobs") || sentence.includes("Pixar") || sentence.includes("Disney")) {
+        // About Jobs and Pixar/Disney
+        chineseTranslation = "乔布斯与迪士尼合作，让皮克斯变得更加成功。";
+      } else if (sentence.includes("Carlos") || sentence.includes("concierto")) {
+        // About Carlos at a concert
+        chineseTranslation = "卡洛斯去听了一场很棒的音乐会，他非常享受。";
+      } else if (keyWords.length > 0) {
+        // Based on keywords found in the sentence
+        const translations = keyWords.map(word => 
+          currentPassage.translations[word.toLowerCase()] || word
+        );
+        chineseTranslation = `这句话提到了: ${translations.join('、')}`;
+      } else {
+        // Fallback for sentences without recognized keywords
+        chineseTranslation = "这是一个西班牙语句子。";
+      }
+      
+      // Update the state with the sentence translation
+      setTranslatedSentences(prev => ({
         ...prev,
-        [paragraphIndex]: chineseTranslation.trim()
+        [sentenceIndex]: chineseTranslation
       }));
     }
   };
@@ -234,24 +223,6 @@ const ReadingPassage: React.FC = () => {
           
           return (
             <div key={paragraphIndex} className="mb-6 last:mb-0 relative">
-              <div className="flex justify-end mb-1">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6 opacity-70 hover:opacity-100 focus:ring-0"
-                      onClick={() => translateParagraph(paragraphIndex)}
-                    >
-                      <Languages className={`h-4 w-4 ${translatedParagraphs[paragraphIndex] ? 'text-spanish-red' : 'text-gray-500'}`} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>翻译段落</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-
               <div>
                 {visibleSentenceIndexes.map((sentenceIndex) => {
                   const sentence = sentences[sentenceIndex];
@@ -293,20 +264,35 @@ const ReadingPassage: React.FC = () => {
                               className={`h-4 w-4 ${isPlaying === sentenceIndex ? 'text-spanish-red animate-pulse' : 'text-spanish-text'}`} 
                             />
                           </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-6 w-6 opacity-70 hover:opacity-100 focus:ring-0 mt-1"
+                                onClick={() => translateSentence(sentenceIndex)}
+                              >
+                                <Languages className={`h-4 w-4 ${translatedSentences[sentenceIndex] ? 'text-spanish-red' : 'text-gray-500'}`} />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>��译句子</p>
+                            </TooltipContent>
+                          </Tooltip>
                         </div>
                       </span>
+                      
+                      {/* Show sentence translation if available */}
+                      {translatedSentences[sentenceIndex] && (
+                        <div className="mt-1 mb-2 text-gray-600 italic bg-gray-100 p-2 rounded-md text-sm border-l-4 border-spanish-red">
+                          <h4 className="text-xs uppercase text-gray-500 mb-1 font-semibold">中文翻译</h4>
+                          {translatedSentences[sentenceIndex]}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
               </div>
-              
-              {/* Show paragraph translation if available */}
-              {translatedParagraphs[paragraphIndex] && (
-                <div className="mt-2 mb-4 text-gray-600 italic bg-gray-100 p-3 rounded-md text-sm border-l-4 border-spanish-red">
-                  <h4 className="text-xs uppercase text-gray-500 mb-1 font-semibold">中文翻译</h4>
-                  {translatedParagraphs[paragraphIndex]}
-                </div>
-              )}
             </div>
           );
         })}
