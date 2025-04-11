@@ -64,14 +64,54 @@ const japaneseToRomaji = (text: string): string => {
     '忙しい': 'isogashii', '暑い': 'atsui', '寒い': 'samui',
     '暖かい': 'atatakai', '涼しい': 'suzushii', '雨': 'ame',
     '雪': 'yuki', '風': 'kaze', '太陽': 'taiyou',
+    'おばあちゃん': 'obaachan', 'レシピ': 'reshipi', '毎週': 'maishuu', '日曜日': 'nichiyoubi',
+    '特別': 'tokubetsu', 'チョコレート': 'chokoreeto', 'ケーキ': 'keeki', '作っていました': 'tsukutte imashita',
+    '大きな': 'ookina', 'ボウル': 'bouru', '小麦粉': 'komugiko', '砂糖': 'satou', 'ココア': 'kokoa',
+    '混ぜました': 'mazemashita', '次に': 'tsugi ni', '新鮮な': 'shinsen na', '卵': 'tamago', '少し': 'sukoshi',
+    '牛乳': 'gyuunyuu', '加えました': 'kuwaemashita', '滑らかな': 'nameraka na', '混合物': 'kongoubutsu',
+    'なるまで': 'naru made', '全て': 'subete', '秘密': 'himitsu', 'シナモン': 'shinamon',
+    'バニラ': 'banira', '数滴': 'suuteki', '注ぎ': 'sosogi', '形': 'kata', 'オーブン': 'oobun',
+    '分間': 'funkan', '待っている': 'matte iru', '若い頃': 'wakai koro', '話': 'hanashi', '話してくれました': 'hanashite kuremashita',
+    '甘い': 'amai', '香り': 'kaori', '広がり': 'hirogari', '家中': 'iejuu', '口': 'kuchi', '水': 'mizu',
+    'させました': 'sasemashita', '完成': 'kansei', '冷ました': 'samashita', '前に': 'mae ni',
+    'かける': 'kakeru', 'アイシング': 'aishingu', 'いつも': 'itsumo', '飾り付けました': 'kazaritsukemashita',
+    '新鮮な': 'shinsen na', 'フルーツ': 'furuutsu', '共有': 'kyouyuu', '時間': 'jikan', '部分': 'bubun',
+    'お気に入り': 'okiniiri', '週': 'shuu'
   };
 
-  let result = text;
-  for (const [jpChar, romajiChar] of Object.entries(mappings)) {
-    result = result.replace(new RegExp(jpChar, 'g'), romajiChar);
+  let romaji = "";
+  let i = 0;
+  
+  while (i < text.length) {
+    let matched = false;
+    
+    for (let len = 4; len > 0; len--) {
+      if (i + len <= text.length) {
+        const substr = text.substring(i, i + len);
+        if (mappings[substr]) {
+          romaji += mappings[substr] + " ";
+          i += len;
+          matched = true;
+          break;
+        }
+      }
+    }
+    
+    if (!matched) {
+      romaji += text[i];
+      i++;
+    }
   }
   
-  return result;
+  return romaji.trim();
+};
+
+const splitJapaneseIntoWords = (text: string): string[] => {
+  const spacedText = text.replace(/([一-龯])([ぁ-んァ-ン])/g, '$1 $2')
+                         .replace(/([ぁ-んァ-ン])([一-龯])/g, '$1 $2')
+                         .replace(/([、。！？])/g, ' $1 ');
+  
+  return spacedText.split(/\s+/).filter(word => word.length > 0);
 };
 
 const ReadingPassage: React.FC = () => {
@@ -228,7 +268,6 @@ const ReadingPassage: React.FC = () => {
               <div>
                 {visibleSentenceIndexes.map((sentenceIndex) => {
                   const sentence = sentences[sentenceIndex];
-                  const words = sentence.match(/\S+|\s+/g) || [];
                   
                   return (
                     <div key={sentenceIndex} className="mb-4 last:mb-0">
@@ -240,19 +279,35 @@ const ReadingPassage: React.FC = () => {
                           {currentLanguage === 'japanese' ? (
                             <div className="flex flex-col mb-2">
                               <div>
-                                {words.map((word, wordIndex) => {
-                                  if (/^\s+$/.test(word)) {
-                                    return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
-                                  }
-                                  
-                                  return (
-                                    <ClickableWord 
-                                      key={`${sentenceIndex}-${wordIndex}`}
-                                      word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
-                                      originalWord={word}
-                                    />
-                                  );
-                                })}
+                                {currentLanguage === 'japanese' ? 
+                                  splitJapaneseIntoWords(sentence).map((word, wordIndex) => {
+                                    if (/^[、。！？]$/.test(word)) {
+                                      return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
+                                    }
+                                    
+                                    return (
+                                      <ClickableWord 
+                                        key={`${sentenceIndex}-${wordIndex}`}
+                                        word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
+                                        originalWord={word}
+                                      />
+                                    );
+                                  })
+                                : 
+                                  sentence.split(/\s+/).map((word, wordIndex) => {
+                                    if (/^\s+$/.test(word)) {
+                                      return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
+                                    }
+                                    
+                                    return (
+                                      <ClickableWord 
+                                        key={`${sentenceIndex}-${wordIndex}`}
+                                        word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
+                                        originalWord={word}
+                                      />
+                                    );
+                                  })
+                                }
                               </div>
                               <div className="text-sm text-gray-500 mt-1">
                                 {japaneseToRomaji(sentence)}
@@ -260,7 +315,7 @@ const ReadingPassage: React.FC = () => {
                             </div>
                           ) : (
                             <>
-                              {words.map((word, wordIndex) => {
+                              {sentence.split(/\s+/).map((word, wordIndex) => {
                                 if (/^\s+$/.test(word)) {
                                   return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
                                 }
