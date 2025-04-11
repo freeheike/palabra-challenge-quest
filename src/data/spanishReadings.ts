@@ -1,3 +1,4 @@
+
 export interface ReadingPassage {
   id: string;
   title: string;
@@ -249,7 +250,7 @@ export const spanishReadings: ReadingPassage[] = [
   {
     id: "passage4",
     title: "Negociación y liderazgo",
-    text: "Jobs e Iger dieron muchos paseos por el campus de Apple, en Palo Alto, o en la conferencia de Allen & Co. en Sun Valley. Al principio trazaron un plan para un nuevo acuerdo de distribución: Pixar iba a recuperar todos los derechos sobre las películas y los personajes que ya había producido a cambio de que Disney se hiciera con una participación en Pixar, y esta le pagaría a Disney una tarifa fija por la distribución de sus futuras películas. Sin embargo, a Iger le preocupaba que un acuerdo así se limitara a dejar a Pixar en posición de convertirse en un gran competidor de Disney, lo que resultaría una mala maniobra incluso si Disney contaba con una participación en la compañía rival. Así pues, comenzó a insinuarle a Jobs que a lo mejor debían pensar en algo más grande. «Quiero que sepas que estoy tratando de apartarme de los cauces habituales del razonamiento con este plan», le dijo. Jobs parecía alentar aquellos avances. «No pasó mucho tiempo antes de que nos quedara claro a ambos que aquella discusión podía llevarnos a una negociación sobre la adquisición de la empresa», recordaba Jobs.",
+    text: "Jobs e Iger dieron muchos paseos por el campus de Apple en Palo Alto, o en la conferencia de Allen & Co. en Sun Valley. Al principio, trazaron un plan para un nuevo acuerdo de distribución: Pixar iba a recuperar todos los derechos sobre las películas y los personajes que ya había producido, a cambio de que Disney se hiciera con una participación en Pixar, y esta le pagaría a Disney una tarifa fija por la distribución de sus futuras películas. Sin embargo, a Iger le preocupaba que un acuerdo así se limitara a dejar a Pixar en posición de convertirse en un gran competidor de Disney, lo que resultaría una mala maniobra incluso si Disney contaba con una participación en la compañía rival. Así pues, comenzó a insinuarle a Jobs que a lo mejor debían pensar en algo más grande. «Quiero que sepas que estoy tratando de apartarme de los cauces habituales del razonamiento con este plan», le dijo. Jobs parecía alentar aquellos avances. «No pasó mucho tiempo antes de que nos quedara claro a ambos que aquella discusión podía llevarnos a una negociación sobre la adquisición de la empresa», recordaba Jobs.",
     question: "¿Qué preocupaba a Iger sobre el acuerdo inicial?",
     options: [
       "Que Pixar no mantendría su identidad",
