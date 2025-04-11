@@ -150,23 +150,6 @@ const ReadingPassage: React.FC = () => {
       if (currentLanguage === 'japanese') {
         voiceName = 'ja-JP-NanamiNeural';
         langCode = 'ja-JP';
-        
-        sentence = sentence
-          .replace(/ wa /g, " は ")
-          .replace(/ wo /g, " を ")
-          .replace(/ ni /g, " に ")
-          .replace(/ ga /g, " が ")
-          .replace(/ no /g, " の ")
-          .replace(/ e /g, " へ ")
-          .replace(/ de /g, " で ")
-          .replace(/ to /g, " と ")
-          .replace(/ mo /g, " も ")
-          .replace(/ ka /g, " か ")
-          .replace(/ yo /g, " よ ")
-          .replace(/ ne /g, " ね ")
-          .replace(/ na /g, " な ")
-          .replace(/ kara /g, " から ")
-          .replace(/ made /g, " まで ");
       }
       
       const speechSynthesisRequestOptions = {
@@ -309,9 +292,11 @@ const ReadingPassage: React.FC = () => {
                                   })
                                 }
                               </div>
-                              <div className="text-sm text-gray-500 mt-1">
-                                {japaneseToRomaji(sentence)}
-                              </div>
+                              {currentPassage.sentenceRomaji && currentPassage.sentenceRomaji[sentenceIndex] && (
+                                <div className="text-sm text-gray-500 mt-1">
+                                  {currentPassage.sentenceRomaji[sentenceIndex]}
+                                </div>
+                              )}
                             </div>
                           ) : (
                             <>

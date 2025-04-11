@@ -100,6 +100,20 @@ export const japaneseReadings: ReadingPassage[] = [
       9: "然后，她在一家小商店为家人买了纪念品。",
       10: "中午，她坐在公园里休息，读书。",
       11: "这是美好的一天，佐藤小姐很高兴能够探索这座城市。"
+    },
+    sentenceRomaji: {
+      0: "Kyou wa Tokyo de hareta hi deshita.",
+      1: "Satou-san wa isogashii machi wo aruite imashita.",
+      2: "Kanojo wa koohii wo nomu tame ni kafe ni hairu koto ni shimashita.",
+      3: "Weitaa wa kanojo ni hohoende, nani ga hoshii ka tazunemashita.",
+      4: "Satou-san wa kafeerate to kurowassan wo chuumon shimashita.",
+      5: "Matte iru aida, kanojo wa mado no soto wo toori sugiru hitobito wo kansatsu shite imashita.",
+      6: "Shashin wo toru kankoukyaku, isoide iru bijinesuman, asonde iru kodomotachi ga imashita.",
+      7: "Choushoku wo oeta ato, kanojo wa kaikei wo sumase, sanpo wo tsuzukemashita.",
+      8: "Kanojo wa bijutsukan wo otozure, yuumei na geijutsu sakuhin wo kanshou shimashita.",
+      9: "Sono ato, chiisana mise de kazoku e no omiyage wo kaimashita.",
+      10: "Shougo ni wa, kanojo wa kyuukei shite hon wo yomu tame ni kouen ni suwari mashita.",
+      11: "Subarashii ichinichi deshita, soshite Satou-san wa machi wo tanken dekite shiawase deshita."
     }
   },
   {
@@ -123,6 +137,7 @@ export const japaneseReadings: ReadingPassage[] = [
       "チョコレート": "chocolate",
       "ケーキ": "cake",
       "作って": "made",
+      "いました": "was (doing)",
       "まず": "first",
       "大きな": "big",
       "ボウル": "bowl",
@@ -141,12 +156,14 @@ export const japaneseReadings: ReadingPassage[] = [
       "になるまで": "until becoming",
       "全て": "everything",
       "混ぜ": "beat",
+      "彼女": "she",
       "レシピ": "recipe",
       "秘密": "secret",
       "シナモン": "cinnamon",
       "バニラ": "vanilla",
       "数滴": "drops",
       "加えること": "to add",
+      "でした": "was",
       "型": "mold",
       "注ぎ": "poured",
       "分間": "minutes",
@@ -154,6 +171,7 @@ export const japaneseReadings: ReadingPassage[] = [
       "入れました": "put",
       "私たち": "we",
       "待って": "waiting",
+      "いる間": "while",
       "若い頃": "youth",
       "話": "stories",
       "してくれました": "told us",
@@ -165,7 +183,6 @@ export const japaneseReadings: ReadingPassage[] = [
       "水": "water",
       "させました": "made",
       "完成": "completed",
-      "チョコレート": "chocolate",
       "アイシング": "icing",
       "かける": "to cover",
       "前に": "before",
@@ -175,6 +192,7 @@ export const japaneseReadings: ReadingPassage[] = [
       "飾り付けました": "decorated",
       "時間": "time",
       "共有": "sharing",
+      "こと": "thing/matter",
       "週": "week",
       "お気に入り": "favorite",
       "部分": "part"
@@ -191,6 +209,19 @@ export const japaneseReadings: ReadingPassage[] = [
       8: "当蛋糕完成后，她会先让它冷却再涂上巧克力糖霜。",
       9: "她总是用新鲜水果装饰蛋糕。",
       10: "与祖母共度这段时光是我一周中最喜欢的部分。"
+    },
+    sentenceRomaji: {
+      0: "Maishuu nichiyoubi, watashi no obaachan wa tokubetsu na chokoreeto keeki wo tsukutte imashita.",
+      1: "Mazu, ookina bouru ni komugiko, satou, kokoa wo mazemashita.",
+      2: "Tsugi ni, shinsen na tamago to sukoshi no gyuunyuu wo kuwaemashita.",
+      3: "Nameraka na kongoubutsu ni naru made subete wo mazemashita.",
+      4: "Kanojo no reshipi no himitsu wa, sukoshi no shinamon to banira wo suuteki kuwaeru koto deshita.",
+      5: "Kongoubutsu wo kata ni sosogi, 45 funkan oobun ni iremashita.",
+      6: "Watashitachi ga matte iru aida, kanojo wa wakai koro no hanashi wo shite kuremashita.",
+      7: "Amai kaori ga iejuu ni hirogari, watashitachi no kuchi wo mizu ni sasemashita.",
+      8: "Keeki ga kansei suru to, chokoreeto no aishingu wo kakeru mae ni samashimashita.",
+      9: "Kanojo wa itsumo shinsen na furuutsu de keeki wo kazaritsukemashita.",
+      10: "Obaachan to sono jikan wo kyouyuu suru koto wa, watashi no shuu no okiniiri no bubun deshita."
     }
   },
   {
@@ -234,7 +265,6 @@ export const japaneseReadings: ReadingPassage[] = [
       "です": "is",
       "秋": "autumn",
       "紅葉": "autumn leaves",
-      "季節": "season",
       "山々": "mountains",
       "赤": "red",
       "黄色": "yellow",
@@ -274,6 +304,20 @@ export const japaneseReadings: ReadingPassage[] = [
       9: "许多人享受滑雪和滑雪板。",
       10: "在东京，圣诞节灯饰装饰城市。",
       11: "日本的四季各有不同的魅力。"
+    },
+    sentenceRomaji: {
+      0: "Nihon ni wa yottsu no utsukushii kisetsu ga arimasu.",
+      1: "Haru ni wa, sakura no hana ga saki, hitobito wa hanami wo tanoshimimasu.",
+      2: "Kouen ya kawayoi ga pinku-iro ni somarimasu.",
+      3: "Natsu ni naru to, ooku no matsuri ga kaisai saremasu.",
+      4: "Hanabi taikai ya bon odori ga ninki desu.",
+      5: "Aki wa kouyou no kisetsu desu.",
+      6: "Yamayama ga aka ya kiiro ni kawarimasu.",
+      7: "Toku ni Kyouto no jiin wa utsukushii keshiki de yuumei desu.",
+      8: "Fuyu ni wa, hokubu de yuki ga furimasu.",
+      9: "Ooku no hito ga sukii ya sunooboodo wo tanoshimimasu.",
+      10: "Tokyo de wa, kurisumasu no irumineeshon ga machi wo kazarimasu.",
+      11: "Nihon no shiki wa, sorezore kotonaru miryoku wo motte imasu."
     }
   }
 ];
