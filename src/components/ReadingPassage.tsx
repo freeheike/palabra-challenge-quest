@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Volume2, Globe } from 'lucide-react';
+import { ArrowRight, Volume2, Globe, Languages } from 'lucide-react';
 import { AZURE_CONFIG } from '@/constants/game';
 import { 
   Tooltip,
@@ -17,6 +17,7 @@ const ReadingPassage: React.FC = () => {
   const [displayedSentences, setDisplayedSentences] = useState<number[]>([0]);
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
   const [translatedSentences, setTranslatedSentences] = useState<Record<number, string>>({});
+  const [translatedParagraphs, setTranslatedParagraphs] = useState<Record<number, string>>({});
   const highlightedSentenceRef = useRef<HTMLSpanElement>(null);
   
   if (!currentPassage) {
@@ -25,6 +26,9 @@ const ReadingPassage: React.FC = () => {
   
   // Split the text into sentences
   const sentences = currentPassage.text.split(/(?<=[.!?])\s+/);
+  
+  // Split the text into paragraphs
+  const paragraphs = currentPassage.text.split(/\n\n+/);
   
   const handleReadNext = () => {
     if (currentSentenceIndex < sentences.length - 1) {
@@ -112,7 +116,7 @@ const ReadingPassage: React.FC = () => {
         return newTranslations;
       });
     } else {
-      // If no translation exists, generate one
+      // Create translation by looking up words in the sentence
       const sentence = sentences[sentenceIndex];
       const words = sentence.match(/\S+|\s+/g) || [];
       
@@ -158,6 +162,61 @@ const ReadingPassage: React.FC = () => {
     }
   };
 
+  const translateParagraph = (paragraphIndex: number) => {
+    if (translatedParagraphs[paragraphIndex]) {
+      // If translation exists, toggle it off
+      setTranslatedParagraphs(prev => {
+        const newTranslations = { ...prev };
+        delete newTranslations[paragraphIndex];
+        return newTranslations;
+      });
+    } else {
+      // Create translation by looking up words in the paragraph
+      const paragraph = paragraphs[paragraphIndex];
+      const words = paragraph.match(/\S+|\s+/g) || [];
+      
+      // Create translation by looking up each word in the translations dictionary
+      let translation = "";
+      let currentWord = "";
+      
+      words.forEach(word => {
+        if (/^\s+$/.test(word)) {
+          // If it's a space, add it directly to the translation
+          translation += word;
+        } else {
+          // Clean the word to remove punctuation for lookup
+          const cleanWord = word.toLowerCase().replace(/[.,;:!?'"()—]/g, '');
+          
+          // Only update currentWord if it's not empty (to avoid matching empty strings)
+          if (cleanWord) {
+            currentWord = cleanWord;
+          }
+          
+          // Try to find the translation
+          const translatedWord = currentPassage.translations[currentWord];
+          
+          if (translatedWord) {
+            // Replace the original word with its translation, preserving punctuation
+            const punctuation = word.match(/[.,;:!?'"()—]/g) || [];
+            translation += translatedWord + punctuation.join('');
+          } else {
+            // If no translation found, use the original word
+            translation += word;
+          }
+          
+          // Add a space after each word unless it's the last word
+          translation += " ";
+        }
+      });
+      
+      // Update the state with the new translation
+      setTranslatedParagraphs(prev => ({
+        ...prev,
+        [paragraphIndex]: translation.trim()
+      }));
+    }
+  };
+
   // Auto-play the sentence when it appears
   useEffect(() => {
     if (displayedSentences.length > 0) {
@@ -177,73 +236,145 @@ const ReadingPassage: React.FC = () => {
     }
   }, [highlightedSentenceIndex]);
   
+  // Determine which sentences are displayed and group them into paragraphs
+  const getDisplayedParagraphs = () => {
+    // Get all displayed sentences
+    const displayedText = displayedSentences.map(index => sentences[index]).join(' ');
+    
+    // Split displayed text into paragraphs
+    return displayedText.split(/\n\n+/);
+  };
+  
+  const displayedParagraphs = getDisplayedParagraphs();
+  
   return (
     <div className="prose max-w-none">
       <h2 className="text-2xl font-semibold text-spanish-text mb-4">{currentPassage.title}</h2>
       
       <div className="text-lg leading-relaxed bg-spanish-background p-6 rounded-lg shadow-md min-h-[200px] max-h-[500px] overflow-y-auto">
-        {displayedSentences.map((sentenceIndex) => {
-          const sentence = sentences[sentenceIndex];
-          // Split the sentence into words, preserving spaces and punctuation
-          const words = sentence.match(/\S+|\s+/g) || [];
+        {paragraphs.map((paragraph, paragraphIndex) => {
+          // Only display paragraphs that contain sentences we've shown
+          if (!displayedSentences.some(sentIndex => {
+            const sentenceText = sentences[sentIndex];
+            return paragraph.includes(sentenceText);
+          })) {
+            return null;
+          }
+          
+          // Find all sentences within this paragraph
+          const paragraphSentences = sentences.filter(sentence => 
+            paragraph.includes(sentence)
+          );
+          
+          // Indexes of sentences in this paragraph
+          const paragraphSentenceIndexes = paragraphSentences.map(sentence => 
+            sentences.indexOf(sentence)
+          );
+          
+          // Only include sentences that should be displayed
+          const visibleSentenceIndexes = paragraphSentenceIndexes.filter(index => 
+            displayedSentences.includes(index)
+          );
+          
+          if (visibleSentenceIndexes.length === 0) {
+            return null;
+          }
           
           return (
-            <div key={sentenceIndex} className="mb-4 last:mb-0">
-              <span 
-                className={`flex items-start group ${highlightedSentenceIndex === sentenceIndex ? 'bg-yellow-100 -mx-2 px-2 py-1 rounded-md' : ''}`}
-                ref={highlightedSentenceIndex === sentenceIndex ? highlightedSentenceRef : null}
-              >
-                <span className="flex-grow">
-                  {words.map((word, wordIndex) => {
-                    // If it's a space, render it directly
-                    if (/^\s+$/.test(word)) {
-                      return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
-                    }
-                    
-                    // Otherwise, it's a word to be made clickable
-                    return (
-                      <ClickableWord 
-                        key={`${sentenceIndex}-${wordIndex}`}
-                        word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
-                        originalWord={word}
-                      />
-                    );
-                  })}
-                </span>
-                <div className="flex items-center ml-1 space-x-1">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="opacity-70 hover:opacity-100 h-6 w-6 mt-1 focus:ring-0" 
-                    onClick={() => speakSentence(sentenceIndex)}
-                    disabled={isPlaying !== null}
-                  >
-                    <Volume2 
-                      className={`h-4 w-4 ${isPlaying === sentenceIndex ? 'text-spanish-red animate-pulse' : 'text-spanish-text'}`} 
-                    />
-                  </Button>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="opacity-70 hover:opacity-100 h-6 w-6 mt-1 focus:ring-0"
-                        onClick={() => translateSentence(sentenceIndex)}
+            <div key={paragraphIndex} className="mb-6 last:mb-0 relative">
+              <div className="flex justify-end mb-1">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 opacity-70 hover:opacity-100 focus:ring-0"
+                      onClick={() => translateParagraph(paragraphIndex)}
+                    >
+                      <Languages className={`h-4 w-4 ${translatedParagraphs[paragraphIndex] ? 'text-spanish-red' : 'text-gray-500'}`} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Translate paragraph</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+
+              <div>
+                {visibleSentenceIndexes.map((sentenceIndex) => {
+                  const sentence = sentences[sentenceIndex];
+                  // Split the sentence into words, preserving spaces and punctuation
+                  const words = sentence.match(/\S+|\s+/g) || [];
+                  
+                  return (
+                    <div key={sentenceIndex} className="mb-4 last:mb-0">
+                      <span 
+                        className={`flex items-start group ${highlightedSentenceIndex === sentenceIndex ? 'bg-yellow-100 -mx-2 px-2 py-1 rounded-md' : ''}`}
+                        ref={highlightedSentenceIndex === sentenceIndex ? highlightedSentenceRef : null}
                       >
-                        <Globe className={`h-4 w-4 ${translatedSentences[sentenceIndex] ? 'text-spanish-red' : 'text-spanish-text'}`} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Translate sentence</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </span>
+                        <span className="flex-grow">
+                          {words.map((word, wordIndex) => {
+                            // If it's a space, render it directly
+                            if (/^\s+$/.test(word)) {
+                              return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
+                            }
+                            
+                            // Otherwise, it's a word to be made clickable
+                            return (
+                              <ClickableWord 
+                                key={`${sentenceIndex}-${wordIndex}`}
+                                word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
+                                originalWord={word}
+                              />
+                            );
+                          })}
+                        </span>
+                        <div className="flex items-center ml-1 space-x-1">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="opacity-70 hover:opacity-100 h-6 w-6 mt-1 focus:ring-0" 
+                            onClick={() => speakSentence(sentenceIndex)}
+                            disabled={isPlaying !== null}
+                          >
+                            <Volume2 
+                              className={`h-4 w-4 ${isPlaying === sentenceIndex ? 'text-spanish-red animate-pulse' : 'text-spanish-text'}`} 
+                            />
+                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="opacity-70 hover:opacity-100 h-6 w-6 mt-1 focus:ring-0"
+                                onClick={() => translateSentence(sentenceIndex)}
+                              >
+                                <Globe className={`h-4 w-4 ${translatedSentences[sentenceIndex] ? 'text-spanish-red' : 'text-spanish-text'}`} />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Translate sentence</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </span>
+                      
+                      {/* Show sentence translation if available */}
+                      {translatedSentences[sentenceIndex] && (
+                        <div className="mt-1 text-gray-600 italic bg-gray-50 p-2 rounded text-sm">
+                          {translatedSentences[sentenceIndex]}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
               
-              {/* Show translation if available */}
-              {translatedSentences[sentenceIndex] && (
-                <div className="mt-1 text-gray-600 italic bg-gray-50 p-2 rounded text-sm">
-                  {translatedSentences[sentenceIndex]}
+              {/* Show paragraph translation if available */}
+              {translatedParagraphs[paragraphIndex] && (
+                <div className="mt-2 mb-4 text-gray-600 italic bg-gray-100 p-3 rounded-md text-sm border-l-4 border-spanish-red">
+                  <h4 className="text-xs uppercase text-gray-500 mb-1 font-semibold">Paragraph Translation</h4>
+                  {translatedParagraphs[paragraphIndex]}
                 </div>
               )}
             </div>
