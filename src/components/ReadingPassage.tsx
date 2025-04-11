@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
@@ -39,6 +40,7 @@ const japaneseToRomaji = (text: string): string => {
     'じゃ': 'ja', 'じゅ': 'ju', 'じょ': 'jo',
     'びゃ': 'bya', 'びゅ': 'byu', 'びょ': 'byo',
     'ぴゃ': 'pya', 'ぴゅ': 'pyu', 'ぴょ': 'pyo',
+    // Remove duplicate entries for kanji characters
     '私': 'watashi', '今日': 'kyou', '明日': 'ashita',
     '昨日': 'kinou', '東京': 'toukyou', '大阪': 'oosaka',
     '先生': 'sensei', '学生': 'gakusei', '友達': 'tomodachi',
@@ -72,7 +74,7 @@ const japaneseToRomaji = (text: string): string => {
     'なるまで': 'naru made', '全て': 'subete', '秘密': 'himitsu', 'シナモン': 'shinamon',
     'バニラ': 'banira', '数滴': 'suuteki', '注ぎ': 'sosogi', '形': 'kata', 'オーブン': 'oobun',
     '分間': 'funkan', '待っている': 'matte iru', '若い頃': 'wakai koro', '話': 'hanashi', '話してくれました': 'hanashite kuremashita',
-    '甘い': 'amai', '香り': 'kaori', '広がり': 'hirogari', '家中': 'iejuu', '口': 'kuchi', '水': 'mizu',
+    '甘い': 'amai', '香り': 'kaori', '広がり': 'hirogari', '家中': 'iejuu', '口': 'kuchi',
     'させました': 'sasemashita', '完成': 'kansei', '冷ました': 'samashita', '前に': 'mae ni',
     'かける': 'kakeru', 'アイシング': 'aishingu', 'いつも': 'itsumo', '飾り付けました': 'kazaritsukemashita',
     '新鮮な': 'shinsen na', 'フルーツ': 'furuutsu', '共有': 'kyouyuu', '時間': 'jikan', '部分': 'bubun',
@@ -262,35 +264,19 @@ const ReadingPassage: React.FC = () => {
                           {currentLanguage === 'japanese' ? (
                             <div className="flex flex-col mb-2">
                               <div>
-                                {currentLanguage === 'japanese' ? 
-                                  splitJapaneseIntoWords(sentence).map((word, wordIndex) => {
-                                    if (/^[、。！？]$/.test(word)) {
-                                      return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
-                                    }
-                                    
-                                    return (
-                                      <ClickableWord 
-                                        key={`${sentenceIndex}-${wordIndex}`}
-                                        word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
-                                        originalWord={word}
-                                      />
-                                    );
-                                  })
-                                : 
-                                  sentence.split(/\s+/).map((word, wordIndex) => {
-                                    if (/^\s+$/.test(word)) {
-                                      return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
-                                    }
-                                    
-                                    return (
-                                      <ClickableWord 
-                                        key={`${sentenceIndex}-${wordIndex}`}
-                                        word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
-                                        originalWord={word}
-                                      />
-                                    );
-                                  })
-                                }
+                                {splitJapaneseIntoWords(sentence).map((word, wordIndex) => {
+                                  if (/^[、。！？]$/.test(word)) {
+                                    return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
+                                  }
+                                  
+                                  return (
+                                    <ClickableWord 
+                                      key={`${sentenceIndex}-${wordIndex}`}
+                                      word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
+                                      originalWord={word}
+                                    />
+                                  );
+                                })}
                               </div>
                               {currentPassage.sentenceRomaji && currentPassage.sentenceRomaji[sentenceIndex] && (
                                 <div className="text-sm text-gray-500 mt-1">
