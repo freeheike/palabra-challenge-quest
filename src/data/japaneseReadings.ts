@@ -1,17 +1,17 @@
+
 import { ReadingPassage } from '@/data/readings';
 
 export const japaneseReadings: ReadingPassage[] = [
   {
     id: "jp-passage1",
-    title: "東京での一日",
-    text: "今日は東京で晴れた日でした。佐藤さんは忙しい街を歩いていました。彼女はコーヒーを飲むためにカフェに入ることにしました。ウェイターは彼女に微笑んで、何が欲しいか尋ねました。佐藤さんはカフェラテとクロワッサンを注文しました。待っている間、彼女は窓の外を通り過ぎる人々を観察していました。写真を撮る観光客、急いでいるビジネスマン、遊んでいる子供たちがいました。朝食を終えた後、彼女は会計を済ませ、散歩を続けました。彼女は美術館を訪れ、有名な芸術作品を鑑賞しました。その後、小さな店で家族へのお土産を買いました。正午には、彼女は休憩して本を読むために公園に座りました。素晴らしい一日でした、そして佐藤さんは街を探索できて幸せでした。",
-    romaji: "Kyou wa Tokyo de hareta hi deshita. Satou-san wa isogashii machi wo aruite imashita. Kanojo wa koohii wo nomu tame ni kafe ni hairu koto ni shimashita. Weitaa wa kanojo ni hohoende, nani ga hoshii ka tazunemashita. Satou-san wa kafe rate to kurowassan wo chuumon shimashita. Matte iru aida, kanojo wa mado no soto wo toori sugiru hitobito wo kansatsu shite imashita. Shashin wo toru kankoukyaku, isoide iru bijinesuman, asonde iru kodomotachi ga imashita. Choushoku wo oeta ato, kanojo wa kaikei wo sumase, sanpo wo tsuzukemashita. Kanojo wa bijutsukan wo otozure, yuumei na geijutsu sakuhin wo kanshou shimashita. Sono ato, chiisana mise de kazoku e no omiyage wo kaimashita. Shougo ni wa, kanojo wa kyuukei shite hon wo yomu tame ni kouen ni suwarimaShita. Subarashii ichinichi deshita, soshite Satou-san wa machi wo tansaku dekite shiawase deshita.",
-    question: "佐藤さんはコーヒーを飲んだ後、どこへ行きましたか？",
+    title: "Tokyo de no Ichinichi",
+    text: "Kyou wa Tokyo de hareta hi deshita. Satou-san wa isogashii machi wo aruite imashita. Kanojo wa koohii wo nomu tame ni kafe ni hairu koto ni shimashita. Weitaa wa kanojo ni hohoende, nani ga hoshii ka tazunemashita. Satou-san wa kafe rate to kurowassan wo chuumon shimashita. Matte iru aida, kanojo wa mado no soto wo toori sugiru hitobito wo kansatsu shite imashita. Shashin wo toru kankoukyaku, isoide iru bijinesuman, asonde iru kodomotachi ga imashita. Choushoku wo oeta ato, kanojo wa kaikei wo sumase, sanpo wo tsuzukemashita. Kanojo wa bijutsukan wo otozure, yuumei na geijutsu sakuhin wo kanshou shimashita. Sono ato, chiisana mise de kazoku e no omiyage wo kaimashita. Shougo ni wa, kanojo wa kyuukei shite hon wo yomu tame ni kouen ni suwarimaShita. Subarashii ichinichi deshita, soshite Satou-san wa machi wo tansaku dekite shiawase deshita.",
+    question: "Satou-san wa koohii wo nonda ato, doko e ikimashita ka?",
     options: [
-      "仕事へ行った",
-      "美術館を訪れた",
-      "家に帰った",
-      "家族に電話をした"
+      "Shigoto e itta",
+      "Bijutsukan wo otozureta",
+      "Ie ni kaetta",
+      "Kazoku ni denwa wo shita"
     ],
     correctAnswer: 1,
     translations: {
@@ -24,7 +24,7 @@ export const japaneseReadings: ReadingPassage[] = [
       "kafe": "cafe",
       "nomu": "to drink",
       "weitaa": "waiter",
-      "hohoende": "smiled",
+      "hohoenda": "smiled",
       "tazuneta": "asked",
       "hoshii": "want",
       "chuumon shita": "ordered",
@@ -90,15 +90,14 @@ export const japaneseReadings: ReadingPassage[] = [
   },
   {
     id: "jp-passage2",
-    title: "おばあちゃんのレシピ",
-    text: "毎週日曜日、私のおばあちゃんは特別なチョコレートケーキを作っていました。まず、大きなボウルに小麦粉、砂糖、ココアを混ぜました。次に、新鮮な卵と少しの牛乳を加えました。滑らかな混合物になるまで全てを混ぜました。彼女のレシピの秘密は、少しのシナモンとバニラを数滴加えることでした。混合物を型に注ぎ、45分間オーブンに入れました。私たちが待っている間、彼女は若い頃の話をしてくれました。甘い香りが家中に広がり、私たちの口を水にさせました。ケーキが完成すると、チョコレートのアイシングをかける前に冷まシました。彼女はいつも新鮮なフルーツでケーキを飾り付けました。おばあちゃんとその時間を共有することは、私の週のお気に入りの部分でした。",
-    romaji: "Maishuu nichiyoubi, watashi no obaachan wa tokubetsu na chokoreeto keeki wo tsukutte imashita. Mazu, ookina bouru ni komugiko, satou, kokoa wo mazemashita. Tsugi ni, shinsen na tamago to sukoshi no gyuunyuu wo kuwaemashita. Nameraka na kongoubutsu ni naru made subete wo mazemashita. Kanojo no reshipi no himitsu wa, sukoshi no shinamon to banira wo suuteki kuwaeru koto deshita. Kongoubutsu wo kata ni sosogi, 45-pun kan oobun ni iremashita. Watashitachi ga matte iru aida, kanojo wa wakai koro no hanashi wo shite kuremashita. Amai kaori ga ie-juu ni hirogari, watashitachi no kuchi wo mizu ni sasemashita. Keeki ga kansei suru to, chokoreeto no aishingu wo kakeru mae ni samaShimashita. Kanojo wa itsumo shinsen na furuutsu de keeki wo kazari tsukemashita. Obaachan to sono jikan wo kyouyuu suru koto wa, watashi no shuu no okiniiri no bubun deshita.",
-    question: "おばあちゃんのレシピの秘密は何でしたか？",
+    title: "Obaachan no Reshipi",
+    text: "Maishuu nichiyoubi, watashi no obaachan wa tokubetsu na chokoreeto keeki wo tsukutte imashita. Mazu, ookina bouru ni komugiko, satou, kokoa wo mazemashita. Tsugi ni, shinsen na tamago to sukoshi no gyuunyuu wo kuwaemashita. Nameraka na kongoubutsu ni naru made subete wo mazemashita. Kanojo no reshipi no himitsu wa, sukoshi no shinamon to banira wo suuteki kuwaeru koto deshita. Kongoubutsu wo kata ni sosogi, 45-pun kan oobun ni iremashita. Watashitachi ga matte iru aida, kanojo wa wakai koro no hanashi wo shite kuremashita. Amai kaori ga ie-juu ni hirogari, watashitachi no kuchi wo mizu ni sasemashita. Keeki ga kansei suru to, chokoreeto no aishingu wo kakeru mae ni samaShimashita. Kanojo wa itsumo shinsen na furuutsu de keeki wo kazari tsukemashita. Obaachan to sono jikan wo kyouyuu suru koto wa, watashi no shuu no okiniiri no bubun deshita.",
+    question: "Obaachan no reshipi no himitsu wa nan deshita ka?",
     options: [
-      "輸入チョコレートを使用すること",
-      "ケーキを2時間焼くこと",
-      "シナモンとバニラを加えること",
-      "有名なシェフのレシピを使用すること"
+      "Yunyuu chokoreeto wo shiyou suru koto",
+      "Keeki wo 2-jikan yaku koto",
+      "Shinamon to banira wo kuwaeru koto",
+      "Yuumei na shefu no reshipi wo shiyou suru koto"
     ],
     correctAnswer: 2,
     translations: {

@@ -26,9 +26,6 @@ const ReadingPassage: React.FC = () => {
   // Split the text into sentences
   const sentences = currentPassage.text.split(/(?<=[.!?])\s+/);
   
-  // Split romaji into sentences if available (for Japanese)
-  const romajiSentences = currentPassage.romaji?.split(/(?<=[.!?])\s+/) || [];
-  
   // Split the text into paragraphs
   const paragraphs = currentPassage.text.split(/\n\n+/);
   
@@ -184,10 +181,6 @@ const ReadingPassage: React.FC = () => {
               <div>
                 {visibleSentenceIndexes.map((sentenceIndex) => {
                   const sentence = sentences[sentenceIndex];
-                  const romajiSentence = currentLanguage === 'japanese' && romajiSentences[sentenceIndex] 
-                    ? romajiSentences[sentenceIndex]
-                    : '';
-                  
                   // Split the sentence into words, preserving spaces and punctuation
                   const words = sentence.match(/\S+|\s+/g) || [];
                   
@@ -197,32 +190,22 @@ const ReadingPassage: React.FC = () => {
                         className={`flex items-start group ${highlightedSentenceIndex === sentenceIndex ? 'bg-yellow-100 -mx-2 px-2 py-1 rounded-md' : ''}`}
                         ref={highlightedSentenceIndex === sentenceIndex ? highlightedSentenceRef : null}
                       >
-                        <span className="flex-grow flex flex-col">
-                          {/* Japanese text */}
-                          <span className="mb-1">
-                            {words.map((word, wordIndex) => {
-                              // If it's a space, render it directly
-                              if (/^\s+$/.test(word)) {
-                                return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
-                              }
-                              
-                              // Otherwise, it's a word to be made clickable
-                              return (
-                                <ClickableWord 
-                                  key={`${sentenceIndex}-${wordIndex}`}
-                                  word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
-                                  originalWord={word}
-                                />
-                              );
-                            })}
-                          </span>
-                          
-                          {/* Romaji text (for Japanese only) */}
-                          {currentLanguage === 'japanese' && romajiSentence && (
-                            <span className="text-sm text-gray-500 italic">
-                              {romajiSentence}
-                            </span>
-                          )}
+                        <span className="flex-grow">
+                          {words.map((word, wordIndex) => {
+                            // If it's a space, render it directly
+                            if (/^\s+$/.test(word)) {
+                              return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
+                            }
+                            
+                            // Otherwise, it's a word to be made clickable
+                            return (
+                              <ClickableWord 
+                                key={`${sentenceIndex}-${wordIndex}`}
+                                word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
+                                originalWord={word}
+                              />
+                            );
+                          })}
                         </span>
                         <div className="flex items-center ml-1 space-x-1">
                           <Button 
