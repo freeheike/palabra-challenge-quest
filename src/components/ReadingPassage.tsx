@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
@@ -40,7 +39,6 @@ const japaneseToRomaji = (text: string): string => {
     'じゃ': 'ja', 'じゅ': 'ju', 'じょ': 'jo',
     'びゃ': 'bya', 'びゅ': 'byu', 'びょ': 'byo',
     'ぴゃ': 'pya', 'ぴゅ': 'pyu', 'ぴょ': 'pyo',
-    // Remove duplicate entries for kanji characters
     '私': 'watashi', '今日': 'kyou', '明日': 'ashita',
     '昨日': 'kinou', '東京': 'toukyou', '大阪': 'oosaka',
     '先生': 'sensei', '学生': 'gakusei', '友達': 'tomodachi',
@@ -302,6 +300,7 @@ const ReadingPassage: React.FC = () => {
                             </>
                           )}
                         </span>
+                        
                         <div className="flex items-center ml-1 space-x-1">
                           <Button 
                             variant="ghost" 
