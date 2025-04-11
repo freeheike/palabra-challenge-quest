@@ -7,6 +7,7 @@ export interface ReadingPassage {
   options: string[];
   correctAnswer: number;
   translations: Record<string, string>;
+  sentenceTranslations?: Record<number, string>;
 }
 
 export { spanishReadings } from './spanishReadings';

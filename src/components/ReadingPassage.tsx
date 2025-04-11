@@ -16,7 +16,7 @@ const ReadingPassage: React.FC = () => {
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [displayedSentences, setDisplayedSentences] = useState<number[]>([0]);
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
-  const [translatedSentences, setTranslatedSentences] = useState<Record<number, string>>({});
+  const [translatedSentences, setTranslatedSentences] = useState<Record<number, boolean>>({});
   const highlightedSentenceRef = useRef<HTMLSpanElement>(null);
   
   if (!currentPassage) {
@@ -106,56 +106,11 @@ const ReadingPassage: React.FC = () => {
     }
   };
 
-  const translateSentence = (sentenceIndex: number) => {
-    if (translatedSentences[sentenceIndex]) {
-      // If translation exists, toggle it off
-      setTranslatedSentences(prev => {
-        const newTranslations = { ...prev };
-        delete newTranslations[sentenceIndex];
-        return newTranslations;
-      });
-    } else {
-      const sentence = sentences[sentenceIndex];
-      
-      // Create a proper Chinese translation for this sentence
-      let chineseTranslation = "";
-      
-      // Extract keywords from the sentence
-      const words = sentence.match(/\b\w+\b/g) || [];
-      const keyWords = words.filter(word => 
-        currentPassage.translations[word.toLowerCase()]
-      );
-      
-      // Generate meaningful Chinese translation based on context
-      if (sentence.includes("abuela") || sentence.includes("pastel") || sentence.includes("chocolate")) {
-        // About grandmother's cake
-        chineseTranslation = "每个星期日，我祖母会做一个特别的巧克力蛋糕。";
-      } else if (sentence.includes("María") || sentence.includes("café")) {
-        // About María in the café
-        chineseTranslation = "在马德里的一个阳光明媚的日子，玛丽亚去咖啡馆喝杯咖啡。";
-      } else if (sentence.includes("Jobs") || sentence.includes("Pixar") || sentence.includes("Disney")) {
-        // About Jobs and Pixar/Disney
-        chineseTranslation = "乔布斯与迪士尼合作，让皮克斯变得更加成功。";
-      } else if (sentence.includes("Carlos") || sentence.includes("concierto")) {
-        // About Carlos at a concert
-        chineseTranslation = "卡洛斯去听了一场很棒的音乐会，他非常享受。";
-      } else if (keyWords.length > 0) {
-        // Based on keywords found in the sentence
-        const translations = keyWords.map(word => 
-          currentPassage.translations[word.toLowerCase()] || word
-        );
-        chineseTranslation = `这句话提到了: ${translations.join('、')}`;
-      } else {
-        // Fallback for sentences without recognized keywords
-        chineseTranslation = "这是一个西班牙语句子。";
-      }
-      
-      // Update the state with the sentence translation
-      setTranslatedSentences(prev => ({
-        ...prev,
-        [sentenceIndex]: chineseTranslation
-      }));
-    }
+  const toggleTranslation = (sentenceIndex: number) => {
+    setTranslatedSentences(prev => ({
+      ...prev,
+      [sentenceIndex]: !prev[sentenceIndex]
+    }));
   };
 
   // Auto-play the sentence when it appears
@@ -264,29 +219,31 @@ const ReadingPassage: React.FC = () => {
                               className={`h-4 w-4 ${isPlaying === sentenceIndex ? 'text-spanish-red animate-pulse' : 'text-spanish-text'}`} 
                             />
                           </Button>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="h-6 w-6 opacity-70 hover:opacity-100 focus:ring-0 mt-1"
-                                onClick={() => translateSentence(sentenceIndex)}
-                              >
-                                <Languages className={`h-4 w-4 ${translatedSentences[sentenceIndex] ? 'text-spanish-red' : 'text-gray-500'}`} />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>��译句子</p>
-                            </TooltipContent>
-                          </Tooltip>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-6 w-6 opacity-70 hover:opacity-100 focus:ring-0 mt-1"
+                                  onClick={() => toggleTranslation(sentenceIndex)}
+                                >
+                                  <Languages className={`h-4 w-4 ${translatedSentences[sentenceIndex] ? 'text-spanish-red' : 'text-gray-500'}`} />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>翻译句子</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </div>
                       </span>
                       
                       {/* Show sentence translation if available */}
-                      {translatedSentences[sentenceIndex] && (
+                      {translatedSentences[sentenceIndex] && currentPassage.sentenceTranslations && currentPassage.sentenceTranslations[sentenceIndex] && (
                         <div className="mt-1 mb-2 text-gray-600 italic bg-gray-100 p-2 rounded-md text-sm border-l-4 border-spanish-red">
                           <h4 className="text-xs uppercase text-gray-500 mb-1 font-semibold">中文翻译</h4>
-                          {translatedSentences[sentenceIndex]}
+                          {currentPassage.sentenceTranslations[sentenceIndex]}
                         </div>
                       )}
                     </div>
