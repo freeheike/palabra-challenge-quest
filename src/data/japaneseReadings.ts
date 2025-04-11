@@ -1,17 +1,16 @@
-
 import { ReadingPassage } from '@/data/readings';
 
 export const japaneseReadings: ReadingPassage[] = [
   {
     id: "jp-passage1",
-    title: "Tokyo de no Ichinichi",
-    text: "Kyou wa Tokyo de hareta hi deshita. Satou-san wa isogashii machi wo aruite imashita. Kanojo wa koohii wo nomu tame ni kafe ni hairu koto ni shimashita. Weitaa wa kanojo ni hohoende, nani ga hoshii ka tazunemashita. Satou-san wa kafe rate to kurowassan wo chuumon shimashita. Matte iru aida, kanojo wa mado no soto wo toori sugiru hitobito wo kansatsu shite imashita. Shashin wo toru kankoukyaku, isoide iru bijinesuman, asonde iru kodomotachi ga imashita. Choushoku wo oeta ato, kanojo wa kaikei wo sumase, sanpo wo tsuzukemashita. Kanojo wa bijutsukan wo otozure, yuumei na geijutsu sakuhin wo kanshou shimashita. Sono ato, chiisana mise de kazoku e no omiyage wo kaimashita. Shougo ni wa, kanojo wa kyuukei shite hon wo yomu tame ni kouen ni suwarimaShita. Subarashii ichinichi deshita, soshite Satou-san wa machi wo tansaku dekite shiawase deshita.",
-    question: "Satou-san wa koohii wo nonda ato, doko e ikimashita ka?",
+    title: "東京での一日",
+    text: "今日は東京で晴れた日でした。佐藤さんは忙しい街を歩いていました。彼女はコーヒーを飲むためにカフェに入ることにしました。ウェイターは彼女に微笑んで、何が欲しいか尋ねました。佐藤さんはカフェラテとクロワッサンを注文しました。待っている間、彼女は窓の外を通り過ぎる人々を観察していました。写真を撮る観光客、急いでいるビジネスマン、遊んでいる子どもたちがいました。朝食を終えた後、彼女は会計を済ませ、散歩を続けました。彼女は美術館を訪れ、有名な芸術作品を鑑賞しました。その後、小さな店で家族へのお土産を買いました。正午には、彼女は休憩して本を読むために公園に座りました。素晴らしい一日でした、そして佐藤さんは街を探索できて幸せでした。",
+    question: "佐藤さんはコーヒーを飲んだ後、どこへ行きましたか？",
     options: [
-      "Shigoto e itta",
-      "Bijutsukan wo otozureta",
-      "Ie ni kaetta",
-      "Kazoku ni denwa wo shita"
+      "仕事へ行った",
+      "美術館を訪れた",
+      "家に帰った",
+      "家族に電話をした"
     ],
     correctAnswer: 1,
     translations: {
@@ -24,7 +23,7 @@ export const japaneseReadings: ReadingPassage[] = [
       "kafe": "cafe",
       "nomu": "to drink",
       "weitaa": "waiter",
-      "hohoenda": "smiled",
+      "hohoende": "smiled",
       "tazuneta": "asked",
       "hoshii": "want",
       "chuumon shita": "ordered",
@@ -90,14 +89,14 @@ export const japaneseReadings: ReadingPassage[] = [
   },
   {
     id: "jp-passage2",
-    title: "Obaachan no Reshipi",
-    text: "Maishuu nichiyoubi, watashi no obaachan wa tokubetsu na chokoreeto keeki wo tsukutte imashita. Mazu, ookina bouru ni komugiko, satou, kokoa wo mazemashita. Tsugi ni, shinsen na tamago to sukoshi no gyuunyuu wo kuwaemashita. Nameraka na kongoubutsu ni naru made subete wo mazemashita. Kanojo no reshipi no himitsu wa, sukoshi no shinamon to banira wo suuteki kuwaeru koto deshita. Kongoubutsu wo kata ni sosogi, 45-pun kan oobun ni iremashita. Watashitachi ga matte iru aida, kanojo wa wakai koro no hanashi wo shite kuremashita. Amai kaori ga ie-juu ni hirogari, watashitachi no kuchi wo mizu ni sasemashita. Keeki ga kansei suru to, chokoreeto no aishingu wo kakeru mae ni samaShimashita. Kanojo wa itsumo shinsen na furuutsu de keeki wo kazari tsukemashita. Obaachan to sono jikan wo kyouyuu suru koto wa, watashi no shuu no okiniiri no bubun deshita.",
-    question: "Obaachan no reshipi no himitsu wa nan deshita ka?",
+    title: "おばあちゃんのレシピ",
+    text: "毎週日曜日、私のおばあちゃんは特別なチョコレートケーキを作っていました。まず、大きなボウルに小麦粉、砂糖、ココアを混ぜました。次に、新鮮な卵と少しの牛乳を加えました。滑らかな混合物になるまで全てを混ぜました。彼女のレシピの秘密は、少しのシナモンとバニラを数滴加えることでした。混合物を型に注ぎ、45分間オーブンに入れました。私たちが待っている間、彼女は若い頃の話をしてくれました。甘い香りが家中に広がり、私たちの口を水にさせました。ケーキが完成すると、チョコレートのアイシングをかける前に冷ましました。彼女はいつも新鮮なフルーツでケーキを飾り付けました。おばあちゃんとその時間を共有することは、私の週のお気に入りの部分でした。",
+    question: "おばあちゃんのレシピの秘密は何でしたか？",
     options: [
-      "Yunyuu chokoreeto wo shiyou suru koto",
-      "Keeki wo 2-jikan yaku koto",
-      "Shinamon to banira wo kuwaeru koto",
-      "Yuumei na shefu no reshipi wo shiyou suru koto"
+      "輸入チョコレートを使用すること",
+      "ケーキを2時間焼くこと",
+      "シナモンとバニラを加えること",
+      "有名なシェフのレシピを使用すること"
     ],
     correctAnswer: 2,
     translations: {
@@ -164,7 +163,7 @@ export const japaneseReadings: ReadingPassage[] = [
       "shuu": "week"
     },
     sentenceTranslations: {
-      0: "每周日，我祖母都会做特别的巧克力蛋糕。",
+      0: "每个星期日，我的祖母都会做特别的巧克力蛋糕。",
       1: "首先，她在大碗中混合面粉、糖和可可粉。",
       2: "接着，她加入新鲜的鸡蛋和少许牛奶。",
       3: "她搅拌所有材料直到成为顺滑的混合物。",
@@ -175,6 +174,82 @@ export const japaneseReadings: ReadingPassage[] = [
       8: "当蛋糕完成后，她会先让它冷却再涂上巧克力糖霜。",
       9: "她总是用新鲜水果装饰蛋糕。",
       10: "与祖母共度这段时光是我一周中最喜欢的部分。"
+    }
+  },
+  {
+    id: "jp-passage3",
+    title: "四季の日本",
+    text: "日本には四つの美しい季節があります。春には、桜の花が咲き、人々は花見を楽しみます。公園や川沿いがピンク色に染まります。夏になると、多くの祭りが開催されます。花火大会や盆踊りが人気です。秋は紅葉の季節です。山々が赤や黄色に変わります。特に京都の寺院は美しい景色で有名です。冬には、北部で雪が降ります。多くの人がスキーやスノーボードを楽しみます。東京では、クリスマスのイルミネーションが街を飾ります。日本の四季は、それぞれ異なる魅力を持っています。",
+    question: "日本の秋に何が起こりますか？",
+    options: [
+      "桜が咲く",
+      "祭りが開催される",
+      "葉が赤や黄色に変わる",
+      "雪が降る"
+    ],
+    correctAnswer: 2,
+    translations: {
+      "四つ": "four",
+      "季節": "seasons",
+      "春": "spring",
+      "桜": "cherry blossoms",
+      "花": "flowers",
+      "咲く": "bloom",
+      "人々": "people",
+      "花見": "cherry blossom viewing",
+      "楽しむ": "enjoy",
+      "公園": "parks",
+      "川沿い": "riverbanks",
+      "ピンク色": "pink color",
+      "染まる": "dyed",
+      "夏": "summer",
+      "多く": "many",
+      "祭り": "festivals",
+      "開催": "held",
+      "花火大会": "fireworks display",
+      "盆踊り": "Bon dance",
+      "人気": "popular",
+      "秋": "autumn",
+      "紅葉": "autumn leaves",
+      "山々": "mountains",
+      "赤": "red",
+      "黄色": "yellow",
+      "変わる": "change",
+      "特に": "especially",
+      "京都": "Kyoto",
+      "寺院": "temples",
+      "美しい": "beautiful",
+      "景色": "scenery",
+      "有名": "famous",
+      "冬": "winter",
+      "北部": "northern part",
+      "雪": "snow",
+      "降る": "fall",
+      "スキー": "skiing",
+      "スノーボード": "snowboarding",
+      "東京": "Tokyo",
+      "クリスマス": "Christmas",
+      "イルミネーション": "illuminations",
+      "街": "city",
+      "飾る": "decorate",
+      "それぞれ": "each",
+      "異なる": "different",
+      "魅力": "charm",
+      "持つ": "have"
+    },
+    sentenceTranslations: {
+      0: "日本有四个美丽的季节。",
+      1: "春天，樱花盛开，人们享受赏花活动。",
+      2: "公园和河岸染上粉色。",
+      3: "夏季，举办许多节日。",
+      4: "烟花表演和盂兰盆舞很受欢迎。",
+      5: "秋天是红叶的季节。",
+      6: "山脉变成红色和黄色。",
+      7: "特别是京都的寺庙因美丽的风景而闻名。",
+      8: "冬天，北部下雪。",
+      9: "许多人享受滑雪和滑雪板。",
+      10: "在东京，圣诞节灯饰装饰城市。",
+      11: "日本的四季各有不同的魅力。"
     }
   }
 ];

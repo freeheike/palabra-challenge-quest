@@ -11,6 +11,69 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+const japaneseToRomaji = (text: string): string => {
+  const mappings: Record<string, string> = {
+    'あ': 'a', 'い': 'i', 'う': 'u', 'え': 'e', 'お': 'o',
+    'か': 'ka', 'き': 'ki', 'く': 'ku', 'け': 'ke', 'こ': 'ko',
+    'さ': 'sa', 'し': 'shi', 'す': 'su', 'せ': 'se', 'そ': 'so',
+    'た': 'ta', 'ち': 'chi', 'つ': 'tsu', 'て': 'te', 'と': 'to',
+    'な': 'na', 'に': 'ni', 'ぬ': 'nu', 'ね': 'ne', 'の': 'no',
+    'は': 'ha', 'ひ': 'hi', 'ふ': 'fu', 'へ': 'he', 'ほ': 'ho',
+    'ま': 'ma', 'み': 'mi', 'む': 'mu', 'め': 'me', 'も': 'mo',
+    'や': 'ya', 'ゆ': 'yu', 'よ': 'yo',
+    'ら': 'ra', 'り': 'ri', 'る': 'ru', 'れ': 're', 'ろ': 'ro',
+    'わ': 'wa', 'を': 'wo', 'ん': 'n',
+    'が': 'ga', 'ぎ': 'gi', 'ぐ': 'gu', 'げ': 'ge', 'ご': 'go',
+    'ざ': 'za', 'じ': 'ji', 'ず': 'zu', 'ぜ': 'ze', 'ぞ': 'zo',
+    'だ': 'da', 'ぢ': 'ji', 'づ': 'zu', 'で': 'de', 'ど': 'do',
+    'ば': 'ba', 'び': 'bi', 'ぶ': 'bu', 'べ': 'be', 'ぼ': 'bo',
+    'ぱ': 'pa', 'ぴ': 'pi', 'ぷ': 'pu', 'ぺ': 'pe', 'ぽ': 'po',
+    'きゃ': 'kya', 'きゅ': 'kyu', 'きょ': 'kyo',
+    'しゃ': 'sha', 'しゅ': 'shu', 'しょ': 'sho',
+    'ちゃ': 'cha', 'ちゅ': 'chu', 'ちょ': 'cho',
+    'にゃ': 'nya', 'にゅ': 'nyu', 'にょ': 'nyo',
+    'ひゃ': 'hya', 'ひゅ': 'hyu', 'ひょ': 'hyo',
+    'みゃ': 'mya', 'みゅ': 'myu', 'みょ': 'myo',
+    'りゃ': 'rya', 'りゅ': 'ryu', 'りょ': 'ryo',
+    'ぎゃ': 'gya', 'ぎゅ': 'gyu', 'ぎょ': 'gyo',
+    'じゃ': 'ja', 'じゅ': 'ju', 'じょ': 'jo',
+    'びゃ': 'bya', 'びゅ': 'byu', 'びょ': 'byo',
+    'ぴゃ': 'pya', 'ぴゅ': 'pyu', 'ぴょ': 'pyo',
+    '私': 'watashi', '今日': 'kyou', '明日': 'ashita',
+    '昨日': 'kinou', '東京': 'toukyou', '大阪': 'oosaka',
+    '先生': 'sensei', '学生': 'gakusei', '友達': 'tomodachi',
+    '電車': 'densha', '新幹線': 'shinkansen', '駅': 'eki',
+    '映画': 'eiga', '音楽': 'ongaku', '本': 'hon',
+    '猫': 'neko', '犬': 'inu', '魚': 'sakana',
+    '水': 'mizu', '食べる': 'taberu', '飲む': 'nomu',
+    '行く': 'iku', '来る': 'kuru', '見る': 'miru',
+    '聞く': 'kiku', '話す': 'hanasu', '読む': 'yomu',
+    '書く': 'kaku', '買う': 'kau', '売る': 'uru',
+    '教える': 'oshieru', '覚える': 'oboeru', '忘れる': 'wasureru',
+    '始める': 'hajimeru', '終わる': 'owaru', '帰る': 'kaeru',
+    '入る': 'hairu', '出る': 'deru', '作る': 'tsukuru',
+    '使う': 'tsukau', '待つ': 'matsu', '休む': 'yasumu',
+    'おはよう': 'ohayou', 'こんにちは': 'konnichiwa', 'こんばんは': 'konbanwa',
+    'さようなら': 'sayounara', 'ありがとう': 'arigatou', 'すみません': 'sumimasen',
+    'はい': 'hai', 'いいえ': 'iie', 'お願いします': 'onegaishimasu',
+    '失礼します': 'shitsurei shimasu', 'お元気ですか': 'ogenki desu ka', 'だいじょうぶです': 'daijoubu desu',
+    '大丈夫': 'daijoubu', '元気': 'genki', '好き': 'suki',
+    '嫌い': 'kirai', '美味しい': 'oishii', '美しい': 'utsukushii',
+    '高い': 'takai', '安い': 'yasui', '面白い': 'omoshiroi',
+    '楽しい': 'tanoshii', '難しい': 'muzukashii', '簡単': 'kantan',
+    '忙しい': 'isogashii', '暑い': 'atsui', '寒い': 'samui',
+    '暖かい': 'atatakai', '涼しい': 'suzushii', '雨': 'ame',
+    '雪': 'yuki', '風': 'kaze', '太陽': 'taiyou',
+  };
+
+  let result = text;
+  for (const [jpChar, romajiChar] of Object.entries(mappings)) {
+    result = result.replace(new RegExp(jpChar, 'g'), romajiChar);
+  }
+  
+  return result;
+};
+
 const ReadingPassage: React.FC = () => {
   const { currentPassage, currentLanguage, highlightedSentenceIndex } = useGame();
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
@@ -23,10 +86,8 @@ const ReadingPassage: React.FC = () => {
     return <div>Loading passage...</div>;
   }
   
-  // Split the text into sentences
-  const sentences = currentPassage.text.split(/(?<=[.!?])\s+/);
+  const sentences = currentPassage.text.split(/(?<=[.!?。])\s*/);
   
-  // Split the text into paragraphs
   const paragraphs = currentPassage.text.split(/\n\n+/);
   
   const handleReadNext = () => {
@@ -43,7 +104,6 @@ const ReadingPassage: React.FC = () => {
       
       let sentence = sentences[sentenceIndex];
       
-      // Configure voice settings based on language
       let voiceName = 'es-ES-AlvaroNeural';
       let langCode = 'es-ES';
       
@@ -51,25 +111,22 @@ const ReadingPassage: React.FC = () => {
         voiceName = 'ja-JP-NanamiNeural';
         langCode = 'ja-JP';
         
-        // Special handling for Japanese particles
-        // This helps with proper pronunciation of particles like "wa" (は) and "wo" (を)
-        // Replace common particle patterns that might be mispronounced
         sentence = sentence
-          .replace(/ wa /g, " は ") // Replace "wa" particle with actual hiragana
-          .replace(/ wo /g, " を ") // Replace "wo" particle with actual hiragana
-          .replace(/ ni /g, " に ") // ni particle
-          .replace(/ ga /g, " が ") // ga particle
-          .replace(/ no /g, " の ") // no particle
-          .replace(/ e /g, " へ ")   // e/he particle
-          .replace(/ de /g, " で ")  // de particle
-          .replace(/ to /g, " と ")  // to particle
-          .replace(/ mo /g, " も ")  // mo particle
-          .replace(/ ka /g, " か ")  // ka question particle
-          .replace(/ yo /g, " よ ")  // yo emphasis particle
-          .replace(/ ne /g, " ね ")  // ne confirmation particle
-          .replace(/ na /g, " な ")  // na prohibitive particle
-          .replace(/ kara /g, " から ") // kara (from/because) particle
-          .replace(/ made /g, " まで "); // made (until) particle
+          .replace(/ wa /g, " は ")
+          .replace(/ wo /g, " を ")
+          .replace(/ ni /g, " に ")
+          .replace(/ ga /g, " が ")
+          .replace(/ no /g, " の ")
+          .replace(/ e /g, " へ ")
+          .replace(/ de /g, " で ")
+          .replace(/ to /g, " と ")
+          .replace(/ mo /g, " も ")
+          .replace(/ ka /g, " か ")
+          .replace(/ yo /g, " よ ")
+          .replace(/ ne /g, " ね ")
+          .replace(/ na /g, " な ")
+          .replace(/ kara /g, " から ")
+          .replace(/ made /g, " まで ");
       }
       
       const speechSynthesisRequestOptions = {
@@ -113,16 +170,14 @@ const ReadingPassage: React.FC = () => {
     }));
   };
 
-  // Auto-play the sentence when it appears
   useEffect(() => {
     if (displayedSentences.length > 0) {
       const lastSentenceIndex = displayedSentences[displayedSentences.length - 1];
       speakSentence(lastSentenceIndex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayedSentences.length]); // Only re-run when displayedSentences changes
-  
-  // Scroll to highlighted sentence when in quiz mode
+  }, [displayedSentences.length]);
+
   useEffect(() => {
     if (highlightedSentenceIndex !== null && highlightedSentenceRef.current) {
       highlightedSentenceRef.current.scrollIntoView({ 
@@ -131,25 +186,20 @@ const ReadingPassage: React.FC = () => {
       });
     }
   }, [highlightedSentenceIndex]);
-  
-  // Determine which sentences are displayed and group them into paragraphs
+
   const getDisplayedParagraphs = () => {
-    // Get all displayed sentences
     const displayedText = displayedSentences.map(index => sentences[index]).join(' ');
-    
-    // Split displayed text into paragraphs
     return displayedText.split(/\n\n+/);
   };
-  
+
   const displayedParagraphs = getDisplayedParagraphs();
-  
+
   return (
     <div className="prose max-w-none">
       <h2 className="text-2xl font-semibold text-spanish-text mb-4">{currentPassage.title}</h2>
       
       <div className="text-lg leading-relaxed bg-spanish-background p-6 rounded-lg shadow-md min-h-[200px] max-h-[500px] overflow-y-auto">
         {paragraphs.map((paragraph, paragraphIndex) => {
-          // Only display paragraphs that contain sentences we've shown
           if (!displayedSentences.some(sentIndex => {
             const sentenceText = sentences[sentIndex];
             return paragraph.includes(sentenceText);
@@ -157,17 +207,14 @@ const ReadingPassage: React.FC = () => {
             return null;
           }
           
-          // Find all sentences within this paragraph
           const paragraphSentences = sentences.filter(sentence => 
             paragraph.includes(sentence)
           );
           
-          // Indexes of sentences in this paragraph
           const paragraphSentenceIndexes = paragraphSentences.map(sentence => 
             sentences.indexOf(sentence)
           );
           
-          // Only include sentences that should be displayed
           const visibleSentenceIndexes = paragraphSentenceIndexes.filter(index => 
             displayedSentences.includes(index)
           );
@@ -181,7 +228,6 @@ const ReadingPassage: React.FC = () => {
               <div>
                 {visibleSentenceIndexes.map((sentenceIndex) => {
                   const sentence = sentences[sentenceIndex];
-                  // Split the sentence into words, preserving spaces and punctuation
                   const words = sentence.match(/\S+|\s+/g) || [];
                   
                   return (
@@ -191,21 +237,44 @@ const ReadingPassage: React.FC = () => {
                         ref={highlightedSentenceIndex === sentenceIndex ? highlightedSentenceRef : null}
                       >
                         <span className="flex-grow">
-                          {words.map((word, wordIndex) => {
-                            // If it's a space, render it directly
-                            if (/^\s+$/.test(word)) {
-                              return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
-                            }
-                            
-                            // Otherwise, it's a word to be made clickable
-                            return (
-                              <ClickableWord 
-                                key={`${sentenceIndex}-${wordIndex}`}
-                                word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
-                                originalWord={word}
-                              />
-                            );
-                          })}
+                          {currentLanguage === 'japanese' ? (
+                            <div className="flex flex-col mb-2">
+                              <div>
+                                {words.map((word, wordIndex) => {
+                                  if (/^\s+$/.test(word)) {
+                                    return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
+                                  }
+                                  
+                                  return (
+                                    <ClickableWord 
+                                      key={`${sentenceIndex}-${wordIndex}`}
+                                      word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
+                                      originalWord={word}
+                                    />
+                                  );
+                                })}
+                              </div>
+                              <div className="text-sm text-gray-500 mt-1">
+                                {japaneseToRomaji(sentence)}
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              {words.map((word, wordIndex) => {
+                                if (/^\s+$/.test(word)) {
+                                  return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
+                                }
+                                
+                                return (
+                                  <ClickableWord 
+                                    key={`${sentenceIndex}-${wordIndex}`}
+                                    word={word.toLowerCase().replace(/[.,;:!?'"()]/g, '')}
+                                    originalWord={word}
+                                  />
+                                );
+                              })}
+                            </>
+                          )}
                         </span>
                         <div className="flex items-center ml-1 space-x-1">
                           <Button 
@@ -239,7 +308,6 @@ const ReadingPassage: React.FC = () => {
                         </div>
                       </span>
                       
-                      {/* Show sentence translation if available */}
                       {translatedSentences[sentenceIndex] && currentPassage.sentenceTranslations && currentPassage.sentenceTranslations[sentenceIndex] && (
                         <div className="mt-1 mb-2 text-gray-600 italic bg-gray-100 p-2 rounded-md text-sm border-l-4 border-spanish-red">
                           <h4 className="text-xs uppercase text-gray-500 mb-1 font-semibold">中文翻译</h4>
