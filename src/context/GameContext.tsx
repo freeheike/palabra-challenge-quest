@@ -15,6 +15,8 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
   const notifications = useGameNotifications();
+  // Cache for translations that aren't necessarily collected words
+  const [translationsCache, setTranslationsCache] = React.useState<Record<string, string>>({});
 
   // Get the appropriate readings based on the current language
   const getReadings = () => {
@@ -51,6 +53,33 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTimeout(() => {
       startGame();
     }, 0);
+  };
+
+  const getWordTranslation = (word: string): string | null => {
+    // First check if it's a collected word
+    const existingWord = state.collectedWords.find(item => item.word === word);
+    if (existingWord) {
+      return existingWord.translation;
+    }
+    
+    // Then check if it's in the translations cache
+    if (translationsCache[word]) {
+      return translationsCache[word];
+    }
+    
+    // Finally check if it's in the current passage translations
+    if (state.currentPassage && state.currentPassage.translations && state.currentPassage.translations[word]) {
+      return state.currentPassage.translations[word];
+    }
+    
+    return null;
+  };
+  
+  const preloadTranslations = (translations: Record<string, string>) => {
+    setTranslationsCache(prev => ({
+      ...prev,
+      ...translations
+    }));
   };
 
   const collectWord = (word: string): string | null => {
@@ -203,7 +232,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loseHeart,
         nextWord,
         changeLanguage,
-        highlightSentenceWithWord
+        highlightSentenceWithWord,
+        getWordTranslation,
+        preloadTranslations
       }}
     >
       {children}
