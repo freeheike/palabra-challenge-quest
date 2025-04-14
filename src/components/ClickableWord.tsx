@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGame } from '@/context/GameContext';
@@ -10,7 +11,7 @@ interface ClickableWordProps {
 }
 
 const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => {
-  const { collectWord, collectedWords, currentLanguage, getWordTranslation } = useGame();
+  const { collectWord, collectedWords, currentLanguage } = useGame();
   const [translation, setTranslation] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   
@@ -19,9 +20,6 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
   
   // Check if this word has already been collected
   const isCollected = collectedWords.some(item => item.word === cleanWord);
-  
-  // If a translation already exists in the game context, use it
-  const existingTranslation = getWordTranslation(cleanWord);
   
   const speakWord = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -40,30 +38,22 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
         langCode = 'ja-JP';
         
         // Special handling for Japanese particles
-        if (wordToSpeak.length === 1) {
-          // For single character particles, use their actual form
-          if (/[はをにがのへでとも]/.test(originalWord)) {
-            wordToSpeak = originalWord;
-          }
-        } else {
-          // For multiple character words, apply replacements if needed
-          wordToSpeak = wordToSpeak
-            .replace(/wa$|^wa\s|\swa\s/g, " は ")
-            .replace(/wo$|^wo\s|\swo\s/g, " を ")
-            .replace(/ni$|^ni\s|\sni\s/g, " に ")
-            .replace(/ga$|^ga\s|\sga\s/g, " が ")
-            .replace(/no$|^no\s|\sno\s/g, " の ")
-            .replace(/e$|^e\s|\se\s/g, " へ ")
-            .replace(/de$|^de\s|\sde\s/g, " で ")
-            .replace(/to$|^to\s|\sto\s/g, " と ")
-            .replace(/mo$|^mo\s|\smo\s/g, " も ")
-            .replace(/ka$|^ka\s|\ska\s/g, " か ")
-            .replace(/yo$|^yo\s|\syo\s/g, " よ ")
-            .replace(/ne$|^ne\s|\sne\s/g, " ね ")
-            .replace(/na$|^na\s|\sna\s/g, " な ")
-            .replace(/kara$|^kara\s|\skara\s/g, " から ")
-            .replace(/made$|^made\s|\smade\s/g, " まで ");
-        }
+        wordToSpeak = wordToSpeak
+          .replace(/wa$|^wa\s|\swa\s/g, " は ")
+          .replace(/wo$|^wo\s|\swo\s/g, " を ")
+          .replace(/ni$|^ni\s|\sni\s/g, " に ")
+          .replace(/ga$|^ga\s|\sga\s/g, " が ")
+          .replace(/no$|^no\s|\sno\s/g, " の ")
+          .replace(/e$|^e\s|\se\s/g, " へ ")
+          .replace(/de$|^de\s|\sde\s/g, " で ")
+          .replace(/to$|^to\s|\sto\s/g, " と ")
+          .replace(/mo$|^mo\s|\smo\s/g, " も ")
+          .replace(/ka$|^ka\s|\ska\s/g, " か ")
+          .replace(/yo$|^yo\s|\syo\s/g, " よ ")
+          .replace(/ne$|^ne\s|\sne\s/g, " ね ")
+          .replace(/na$|^na\s|\sna\s/g, " な ")
+          .replace(/kara$|^kara\s|\skara\s/g, " から ")
+          .replace(/made$|^made\s|\smade\s/g, " まで ");
       }
       
       const speechSynthesisRequestOptions = {
@@ -101,24 +91,16 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
   };
   
   const handleClick = () => {
-    // If we already have a translation (either from collection or pre-loaded), use it
-    if (existingTranslation) {
-      setTranslation(existingTranslation);
-      return;
-    }
-    
-    // Otherwise try to collect the word
-    const result = collectWord(cleanWord);
+    const result = collectWord(word);
     if (result) {
       setTranslation(result);
     }
-    
     // Speak the word when it's collected
     speakWord({ stopPropagation: () => {} } as React.MouseEvent);
   };
   
-  // If the word has already been collected or has a pre-existing translation, show tooltip
-  if ((isCollected || existingTranslation) && (translation || existingTranslation)) {
+  // If the word has already been collected, show tooltip
+  if (isCollected && translation) {
     return (
       <TooltipProvider>
         <Tooltip>
@@ -134,13 +116,13 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
                 disabled={isPlaying}
               >
                 <Volume2 
-                  className={`h-3.5 w-3.5 ${isPlaying ? 'text-spanish-gold animate-pulse' : 'text-spanish-red'}`} 
+                  className={`h-3 w-3 ${isPlaying ? 'text-spanish-gold animate-pulse' : 'text-spanish-red'}`} 
                 />
               </button>
             </span>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{translation || existingTranslation}</p>
+            <p>{translation}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -161,7 +143,7 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
           disabled={isPlaying}
         >
           <Volume2 
-            className={`h-3.5 w-3.5 ${isPlaying ? 'text-spanish-gold animate-pulse' : 'text-spanish-red'}`} 
+            className={`h-3 w-3 ${isPlaying ? 'text-spanish-gold animate-pulse' : 'text-spanish-red'}`} 
           />
         </button>
       )}

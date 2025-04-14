@@ -32,6 +32,4 @@ export interface GameContextType extends GameState {
   nextWord: () => void;
   changeLanguage: (language: SupportedLanguage) => void;
   highlightSentenceWithWord: (word: string) => void;
-  getWordTranslation: (word: string) => string | null;
-  preloadTranslations: (translations: Record<string, string>) => void;
 }
