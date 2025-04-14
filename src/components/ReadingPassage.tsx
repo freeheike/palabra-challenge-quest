@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
@@ -110,12 +109,19 @@ const japaneseToRomaji = (text: string): string => {
   return romaji.trim();
 };
 
-const splitJapaneseIntoWords = (text: string): string[] => {
-  const spacedText = text.replace(/([一-龯])([ぁ-んァ-ン])/g, '$1 $2')
-                         .replace(/([ぁ-んァ-ン])([一-龯])/g, '$1 $2')
-                         .replace(/([、。！？])/g, ' $1 ');
+const splitIntoWords = (text: string, language: string): string[] => {
+  if (language === 'japanese') {
+    return text.replace(/([一-龯])([ぁ-んァ-ン])/g, '$1 $2')
+               .replace(/([ぁ-んァ-ン])([一-龯])/g, '$1 $2')
+               .replace(/([、。！？])/g, ' $1 ')
+               .split(/\s+/)
+               .filter(word => word.length > 0);
+  } else if (language === 'spanish') {
+    return text.split(/\s+/)
+               .filter(word => word.length > 0);
+  }
   
-  return spacedText.split(/\s+/).filter(word => word.length > 0);
+  return text.split(/\s+/).filter(word => word.length > 0);
 };
 
 const ReadingPassage: React.FC = () => {
@@ -266,7 +272,7 @@ const ReadingPassage: React.FC = () => {
                           {currentLanguage === 'japanese' ? (
                             <div className="flex flex-col mb-2">
                               <div>
-                                {splitJapaneseIntoWords(sentence).map((word, wordIndex) => {
+                                {splitIntoWords(sentence, 'japanese').map((word, wordIndex) => {
                                   if (/^[、。！？]$/.test(word)) {
                                     return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
                                   }
@@ -288,7 +294,7 @@ const ReadingPassage: React.FC = () => {
                             </div>
                           ) : (
                             <>
-                              {sentence.split(/\s+/).map((word, wordIndex) => {
+                              {splitIntoWords(sentence, 'spanish').map((word, wordIndex) => {
                                 if (/^\s+$/.test(word)) {
                                   return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
                                 }
