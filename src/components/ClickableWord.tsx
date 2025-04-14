@@ -108,7 +108,7 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
     }
     
     // Otherwise try to collect the word
-    const result = collectWord(word);
+    const result = collectWord(cleanWord);
     if (result) {
       setTranslation(result);
     }
