@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import ClickableWord from './ClickableWord';
 import { useGame } from '@/context/GameContext';
@@ -111,11 +112,15 @@ const japaneseToRomaji = (text: string): string => {
 
 const getWordsFromSentence = (sentence: string, language: string): string[] => {
   if (language === 'japanese') {
-    return sentence.replace(/([一-龯])([ぁ-んァ-ン])/g, '$1 $2')
-               .replace(/([ぁ-んァ-ン])([一-龯])/g, '$1 $2')
-               .replace(/([、。！？])/g, ' $1 ')
-               .split(/\s+/)
-               .filter(word => word.length > 0);
+    // Improved Japanese word segmentation by adding more character types
+    // This regex handles kanji, hiragana, katakana, punctuation, and ensures spaces between different character types
+    return sentence
+      .replace(/([一-龯])([ぁ-んァ-ン])/g, '$1 $2') // Space between kanji and kana
+      .replace(/([ぁ-んァ-ン])([一-龯])/g, '$1 $2') // Space between kana and kanji
+      .replace(/([、。！？])/g, ' $1 ') // Space around punctuation
+      .replace(/([ぁ-んァ-ン])([ぁ-んァ-ン]{2,})/g, '$1 $2') // Better segmentation of long kana sequences
+      .split(/\s+/)
+      .filter(word => word.length > 0);
   } else {
     const words = [];
     const wordMatches = sentence.match(/[\wáéíóúüñÁÉÍÓÚÜÑ]+|[^\s\wáéíóúüñÁÉÍÓÚÜÑ]+/g);
@@ -275,12 +280,14 @@ const ReadingPassage: React.FC = () => {
                         <span className="flex-grow">
                           {currentLanguage === 'japanese' ? (
                             <div className="flex flex-col mb-2">
-                              <div>
+                              <div className="space-x-0.5">
                                 {getWordsFromSentence(sentence, 'japanese').map((word, wordIndex) => {
+                                  // Always make Japanese words clickable except for punctuation
                                   if (/^[、。！？]$/.test(word)) {
                                     return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
                                   }
                                   
+                                  // Every Japanese word is now clickable with ClickableWord
                                   return (
                                     <ClickableWord 
                                       key={`${sentenceIndex}-${wordIndex}`}

@@ -38,22 +38,30 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
         langCode = 'ja-JP';
         
         // Special handling for Japanese particles
-        wordToSpeak = wordToSpeak
-          .replace(/wa$|^wa\s|\swa\s/g, " は ")
-          .replace(/wo$|^wo\s|\swo\s/g, " を ")
-          .replace(/ni$|^ni\s|\sni\s/g, " に ")
-          .replace(/ga$|^ga\s|\sga\s/g, " が ")
-          .replace(/no$|^no\s|\sno\s/g, " の ")
-          .replace(/e$|^e\s|\se\s/g, " へ ")
-          .replace(/de$|^de\s|\sde\s/g, " で ")
-          .replace(/to$|^to\s|\sto\s/g, " と ")
-          .replace(/mo$|^mo\s|\smo\s/g, " も ")
-          .replace(/ka$|^ka\s|\ska\s/g, " か ")
-          .replace(/yo$|^yo\s|\syo\s/g, " よ ")
-          .replace(/ne$|^ne\s|\sne\s/g, " ね ")
-          .replace(/na$|^na\s|\sna\s/g, " な ")
-          .replace(/kara$|^kara\s|\skara\s/g, " から ")
-          .replace(/made$|^made\s|\smade\s/g, " まで ");
+        if (wordToSpeak.length === 1) {
+          // For single character particles, use their actual form
+          if (/[はをにがのへでとも]/.test(originalWord)) {
+            wordToSpeak = originalWord;
+          }
+        } else {
+          // For multiple character words, apply replacements if needed
+          wordToSpeak = wordToSpeak
+            .replace(/wa$|^wa\s|\swa\s/g, " は ")
+            .replace(/wo$|^wo\s|\swo\s/g, " を ")
+            .replace(/ni$|^ni\s|\sni\s/g, " に ")
+            .replace(/ga$|^ga\s|\sga\s/g, " が ")
+            .replace(/no$|^no\s|\sno\s/g, " の ")
+            .replace(/e$|^e\s|\se\s/g, " へ ")
+            .replace(/de$|^de\s|\sde\s/g, " で ")
+            .replace(/to$|^to\s|\sto\s/g, " と ")
+            .replace(/mo$|^mo\s|\smo\s/g, " も ")
+            .replace(/ka$|^ka\s|\ska\s/g, " か ")
+            .replace(/yo$|^yo\s|\syo\s/g, " よ ")
+            .replace(/ne$|^ne\s|\sne\s/g, " ね ")
+            .replace(/na$|^na\s|\sna\s/g, " な ")
+            .replace(/kara$|^kara\s|\skara\s/g, " から ")
+            .replace(/made$|^made\s|\smade\s/g, " まで ");
+        }
       }
       
       const speechSynthesisRequestOptions = {
