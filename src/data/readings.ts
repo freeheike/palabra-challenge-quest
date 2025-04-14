@@ -8,7 +8,6 @@ export interface ReadingPassage {
   correctAnswer: number;
   translations: Record<string, string>;
   sentenceTranslations?: Record<number, string>;
-  sentenceRomaji?: Record<number, string>;
 }
 
 export { spanishReadings } from './spanishReadings';
