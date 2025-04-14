@@ -109,19 +109,23 @@ const japaneseToRomaji = (text: string): string => {
   return romaji.trim();
 };
 
-const splitIntoWords = (text: string, language: string): string[] => {
+const getWordsFromSentence = (sentence: string, language: string): string[] => {
   if (language === 'japanese') {
-    return text.replace(/([一-龯])([ぁ-んァ-ン])/g, '$1 $2')
+    return sentence.replace(/([一-龯])([ぁ-んァ-ン])/g, '$1 $2')
                .replace(/([ぁ-んァ-ン])([一-龯])/g, '$1 $2')
                .replace(/([、。！？])/g, ' $1 ')
                .split(/\s+/)
                .filter(word => word.length > 0);
-  } else if (language === 'spanish') {
-    return text.split(/\s+/)
-               .filter(word => word.length > 0);
+  } else {
+    const words = [];
+    const wordMatches = sentence.match(/[\wáéíóúüñÁÉÍÓÚÜÑ]+|[^\s\wáéíóúüñÁÉÍÓÚÜÑ]+/g);
+    
+    if (wordMatches) {
+      return wordMatches.filter(word => word.trim() !== '');
+    }
+    
+    return [];
   }
-  
-  return text.split(/\s+/).filter(word => word.length > 0);
 };
 
 const ReadingPassage: React.FC = () => {
@@ -272,7 +276,7 @@ const ReadingPassage: React.FC = () => {
                           {currentLanguage === 'japanese' ? (
                             <div className="flex flex-col mb-2">
                               <div>
-                                {splitIntoWords(sentence, 'japanese').map((word, wordIndex) => {
+                                {getWordsFromSentence(sentence, 'japanese').map((word, wordIndex) => {
                                   if (/^[、。！？]$/.test(word)) {
                                     return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
                                   }
@@ -293,9 +297,13 @@ const ReadingPassage: React.FC = () => {
                               )}
                             </div>
                           ) : (
-                            <>
-                              {splitIntoWords(sentence, 'spanish').map((word, wordIndex) => {
-                                if (/^\s+$/.test(word)) {
+                            <div className="space-x-1">
+                              {getWordsFromSentence(sentence, 'spanish').map((word, wordIndex) => {
+                                if (!word || /^\s+$/.test(word)) {
+                                  return null;
+                                }
+                                
+                                if (/^[.,;:!?'"()]$/.test(word)) {
                                   return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
                                 }
                                 
@@ -307,7 +315,7 @@ const ReadingPassage: React.FC = () => {
                                   />
                                 );
                               })}
-                            </>
+                            </div>
                           )}
                         </span>
                         
