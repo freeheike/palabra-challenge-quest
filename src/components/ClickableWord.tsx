@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGame } from '@/context/GameContext';
@@ -11,7 +10,7 @@ interface ClickableWordProps {
 }
 
 const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => {
-  const { collectWord, collectedWords, currentLanguage } = useGame();
+  const { collectWord, collectedWords, currentLanguage, getWordTranslation } = useGame();
   const [translation, setTranslation] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   
@@ -20,6 +19,9 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
   
   // Check if this word has already been collected
   const isCollected = collectedWords.some(item => item.word === cleanWord);
+  
+  // If a translation already exists in the game context, use it
+  const existingTranslation = getWordTranslation(cleanWord);
   
   const speakWord = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -99,16 +101,24 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
   };
   
   const handleClick = () => {
+    // If we already have a translation (either from collection or pre-loaded), use it
+    if (existingTranslation) {
+      setTranslation(existingTranslation);
+      return;
+    }
+    
+    // Otherwise try to collect the word
     const result = collectWord(word);
     if (result) {
       setTranslation(result);
     }
+    
     // Speak the word when it's collected
     speakWord({ stopPropagation: () => {} } as React.MouseEvent);
   };
   
-  // If the word has already been collected, show tooltip
-  if (isCollected && translation) {
+  // If the word has already been collected or has a pre-existing translation, show tooltip
+  if ((isCollected || existingTranslation) && (translation || existingTranslation)) {
     return (
       <TooltipProvider>
         <Tooltip>
@@ -124,13 +134,13 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
                 disabled={isPlaying}
               >
                 <Volume2 
-                  className={`h-3 w-3 ${isPlaying ? 'text-spanish-gold animate-pulse' : 'text-spanish-red'}`} 
+                  className={`h-3.5 w-3.5 ${isPlaying ? 'text-spanish-gold animate-pulse' : 'text-spanish-red'}`} 
                 />
               </button>
             </span>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{translation}</p>
+            <p>{translation || existingTranslation}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -151,7 +161,7 @@ const ClickableWord: React.FC<ClickableWordProps> = ({ word, originalWord }) => 
           disabled={isPlaying}
         >
           <Volume2 
-            className={`h-3 w-3 ${isPlaying ? 'text-spanish-gold animate-pulse' : 'text-spanish-red'}`} 
+            className={`h-3.5 w-3.5 ${isPlaying ? 'text-spanish-gold animate-pulse' : 'text-spanish-red'}`} 
           />
         </button>
       )}

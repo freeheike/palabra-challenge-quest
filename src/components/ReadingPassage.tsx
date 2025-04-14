@@ -112,13 +112,14 @@ const japaneseToRomaji = (text: string): string => {
 
 const getWordsFromSentence = (sentence: string, language: string): string[] => {
   if (language === 'japanese') {
-    // Improved Japanese word segmentation by adding more character types
-    // This regex handles kanji, hiragana, katakana, punctuation, and ensures spaces between different character types
+    // Enhanced Japanese word segmentation to better handle all word types
     return sentence
       .replace(/([一-龯])([ぁ-んァ-ン])/g, '$1 $2') // Space between kanji and kana
       .replace(/([ぁ-んァ-ン])([一-龯])/g, '$1 $2') // Space between kana and kanji
       .replace(/([、。！？])/g, ' $1 ') // Space around punctuation
       .replace(/([ぁ-んァ-ン])([ぁ-んァ-ン]{2,})/g, '$1 $2') // Better segmentation of long kana sequences
+      // Additional patterns to improve segmentation
+      .replace(/([一-龯])([一-龯])/g, '$1 $2') // Add space between consecutive kanji
       .split(/\s+/)
       .filter(word => word.length > 0);
   } else {
@@ -134,19 +135,25 @@ const getWordsFromSentence = (sentence: string, language: string): string[] => {
 };
 
 const ReadingPassage: React.FC = () => {
-  const { currentPassage, currentLanguage, highlightedSentenceIndex } = useGame();
+  const { currentPassage, currentLanguage, highlightedSentenceIndex, preloadTranslations } = useGame();
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [displayedSentences, setDisplayedSentences] = useState<number[]>([0]);
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
   const [translatedSentences, setTranslatedSentences] = useState<Record<number, boolean>>({});
   const highlightedSentenceRef = useRef<HTMLSpanElement>(null);
   
+  // Preload translations from passage dictionary when passage changes
+  useEffect(() => {
+    if (currentPassage && currentPassage.translations) {
+      preloadTranslations(currentPassage.translations);
+    }
+  }, [currentPassage, preloadTranslations]);
+  
   if (!currentPassage) {
     return <div>Loading passage...</div>;
   }
   
   const sentences = currentPassage.text.split(/(?<=[.!?。])\s*/);
-  
   const paragraphs = currentPassage.text.split(/\n\n+/);
   
   const handleReadNext = () => {
@@ -280,14 +287,14 @@ const ReadingPassage: React.FC = () => {
                         <span className="flex-grow">
                           {currentLanguage === 'japanese' ? (
                             <div className="flex flex-col mb-2">
-                              <div className="space-x-0.5">
+                              <div className="space-x-0.5 leading-loose">
                                 {getWordsFromSentence(sentence, 'japanese').map((word, wordIndex) => {
-                                  // Always make Japanese words clickable except for punctuation
+                                  // Only punctuation isn't clickable
                                   if (/^[、。！？]$/.test(word)) {
                                     return <span key={`${sentenceIndex}-${wordIndex}`}>{word}</span>;
                                   }
                                   
-                                  // Every Japanese word is now clickable with ClickableWord
+                                  // Every Japanese word is clickable with ClickableWord
                                   return (
                                     <ClickableWord 
                                       key={`${sentenceIndex}-${wordIndex}`}
