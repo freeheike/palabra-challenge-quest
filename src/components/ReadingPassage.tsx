@@ -76,7 +76,7 @@ const japaneseToRomaji = (text: string): string => {
     '甘い': 'amai', '香り': 'kaori', '広がり': 'hirogari', '家中': 'iejuu', '口': 'kuchi',
     'させました': 'sasemashita', '完成': 'kansei', '冷ました': 'samashita', '前に': 'mae ni',
     'かける': 'kakeru', 'アイシング': 'aishingu', 'いつも': 'itsumo', 
-    '新鮮な': 'shinsen na', 'フルーツ': 'furuutsu', '共有': 'kyouyuu', '時間': 'jikan', '部分': 'bubun',
+    'フルーツ': 'furuutsu', '共有': 'kyouyuu', '時間': 'jikan', '部分': 'bubun',
     'お気に入り': 'okiniiri', '週': 'shuu',
     '作っていました': 'tsukutte imashita',
     '話してくれました': 'hanashite kuremashita',
