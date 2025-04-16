@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { GameProvider, useGame } from '@/context/GameContext';
 import ReadingPassage from '@/components/ReadingPassage';
@@ -9,13 +8,18 @@ import GameInstructions from '@/components/GameInstructions';
 import VocabularyChallenge from '@/components/VocabularyChallenge';
 
 const GameContent: React.FC = () => {
-  const { startGame, currentPassage, isInChallengeMode } = useGame();
+  const { startGame, currentPassage, currentLanguage, isInChallengeMode } = useGame();
   
   useEffect(() => {
+    console.log('GameContent useEffect - currentPassage:', currentPassage);
+    console.log('GameContent useEffect - currentLanguage:', currentLanguage);
     if (!currentPassage) {
+      console.log('Starting new game...');
       startGame();
     }
-  }, [currentPassage, startGame]);
+  }, [currentPassage, startGame, currentLanguage]);
+  
+  console.log('GameContent render - currentPassage:', currentPassage);
   
   if (!currentPassage) {
     return (

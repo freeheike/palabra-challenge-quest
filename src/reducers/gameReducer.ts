@@ -1,10 +1,9 @@
-
 import { GameState } from '@/types/game';
 import { ReadingPassage } from '@/data/readings';
 import { MAX_HEARTS } from '@/constants/game';
 import { SupportedLanguage } from '@/types/language';
 
-type GameAction =
+export type GameAction =
   | { type: 'SET_CURRENT_PASSAGE'; payload: ReadingPassage }
   | { type: 'COLLECT_WORD'; payload: { word: string; translation: string } }
   | { type: 'SELECT_ANSWER'; payload: number }
@@ -15,7 +14,8 @@ type GameAction =
   | { type: 'SET_CURRENT_WORD_INDEX'; payload: number }
   | { type: 'SET_LANGUAGE'; payload: SupportedLanguage }
   | { type: 'SET_HIGHLIGHTED_SENTENCE'; payload: number | null }
-  | { type: 'RESET_GAME' };
+  | { type: 'RESET_GAME' }
+  | { type: 'USE_TRANSLATION_ITEM' };
 
 export const initialGameState: GameState = {
   currentPassage: null,
@@ -27,16 +27,24 @@ export const initialGameState: GameState = {
   remainingHearts: MAX_HEARTS,
   currentWordIndex: 0,
   currentLanguage: 'spanish',
-  highlightedSentenceIndex: null
+  highlightedSentenceIndex: null,
+  translationItemCount: 5
 };
 
 export const gameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
     case 'SET_CURRENT_PASSAGE':
       return {
-        ...initialGameState,
+        ...state,
         currentPassage: action.payload,
-        currentLanguage: state.currentLanguage
+        collectedWords: [],
+        selectedAnswer: null,
+        isAnswerCorrect: null,
+        isGameComplete: false,
+        isInChallengeMode: false,
+        remainingHearts: MAX_HEARTS,
+        currentWordIndex: 0,
+        highlightedSentenceIndex: null
       };
     case 'COLLECT_WORD':
       return {
@@ -78,8 +86,17 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       };
     case 'SET_LANGUAGE':
       return {
-        ...initialGameState,
-        currentLanguage: action.payload
+        ...state,
+        currentLanguage: action.payload,
+        currentPassage: null,
+        collectedWords: [],
+        selectedAnswer: null,
+        isAnswerCorrect: null,
+        isGameComplete: false,
+        isInChallengeMode: false,
+        remainingHearts: MAX_HEARTS,
+        currentWordIndex: 0,
+        highlightedSentenceIndex: null
       };
     case 'SET_HIGHLIGHTED_SENTENCE':
       return {
@@ -88,9 +105,24 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       };
     case 'RESET_GAME':
       return {
-        ...initialGameState,
-        currentLanguage: state.currentLanguage
+        ...state,
+        collectedWords: [],
+        selectedAnswer: null,
+        isAnswerCorrect: null,
+        isGameComplete: false,
+        isInChallengeMode: false,
+        remainingHearts: MAX_HEARTS,
+        currentWordIndex: 0,
+        highlightedSentenceIndex: null
       };
+    case 'USE_TRANSLATION_ITEM':
+      if (state.translationItemCount > 0) {
+        return {
+          ...state,
+          translationItemCount: state.translationItemCount - 1
+        };
+      }
+      return state;
     default:
       return state;
   }

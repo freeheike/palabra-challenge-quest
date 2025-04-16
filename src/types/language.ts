@@ -1,5 +1,4 @@
-
-export type SupportedLanguage = 'spanish' | 'japanese';
+export type SupportedLanguage = 'spanish' | 'japanese' | 'english';
 
 export interface LanguageOption {
   id: SupportedLanguage;
@@ -9,5 +8,6 @@ export interface LanguageOption {
 
 export const languageOptions: LanguageOption[] = [
   { id: 'spanish', name: 'Spanish', nativeName: 'Español' },
-  { id: 'japanese', name: 'Japanese', nativeName: '日本語' }
+  { id: 'japanese', name: 'Japanese', nativeName: '日本語' },
+  { id: 'english', name: 'English', nativeName: 'English' }
 ];

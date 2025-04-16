@@ -1,4 +1,3 @@
-
 import { SupportedLanguage } from './language';
 import { ReadingPassage } from '@/data/readings';
 
@@ -18,6 +17,7 @@ export interface GameState {
   currentWordIndex: number;
   currentLanguage: SupportedLanguage;
   highlightedSentenceIndex: number | null;
+  translationItemCount: number;
 }
 
 export interface GameContextType extends GameState {
@@ -32,4 +32,5 @@ export interface GameContextType extends GameState {
   nextWord: () => void;
   changeLanguage: (language: SupportedLanguage) => void;
   highlightSentenceWithWord: (word: string) => void;
+  useTranslationItem: () => boolean;
 }

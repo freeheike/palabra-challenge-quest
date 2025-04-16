@@ -1,4 +1,3 @@
-
 import { useToast } from '@/components/ui/use-toast';
 import { WORDS_TO_COLLECT } from '@/constants/game';
 
@@ -67,6 +66,14 @@ export const useGameNotifications = () => {
     });
   };
 
+  const notifyTranslationItemsDepleted = () => {
+    toast({
+      title: "翻译道具已用完",
+      description: "您已经用完了所有的翻译道具。",
+      variant: "destructive",
+    });
+  };
+
   return {
     notifyWordCollected,
     notifyNoTranslation,
@@ -75,6 +82,7 @@ export const useGameNotifications = () => {
     notifyIncorrectAnswer,
     notifyNotEnoughWords,
     notifyChallengeFailed,
-    notifyChallengeComplete
+    notifyChallengeComplete,
+    notifyTranslationItemsDepleted
   };
 };

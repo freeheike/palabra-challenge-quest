@@ -1,3 +1,6 @@
+import { spanishReadings } from './spanishReadings';
+import { japaneseReadings } from './japaneseReadings';
+import { englishReadings } from './englishReadings';
 
 export interface ReadingPassage {
   id: string;
@@ -6,10 +9,9 @@ export interface ReadingPassage {
   question: string;
   options: string[];
   correctAnswer: number;
-  translations: Record<string, string>;
-  sentenceTranslations?: Record<number, string>;
-  sentenceRomaji?: Record<number, string>;
+  sentenceTranslations?: Record<string, string>;
+  sentenceRomaji?: Record<string, string>;
+  sentenceKana?: Record<string, string>;
 }
 
-export { spanishReadings } from './spanishReadings';
-export { japaneseReadings } from './japaneseReadings';
+export { spanishReadings, japaneseReadings, englishReadings };

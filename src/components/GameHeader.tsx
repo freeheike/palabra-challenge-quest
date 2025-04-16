@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useGame } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { BookOpenCheck } from 'lucide-react';
 import { WORDS_TO_COLLECT } from '@/constants/game';
 import LanguageSelector from './LanguageSelector';
 import ReadingSelectionList from './ReadingSelectionList';
+import TranslationItems from './TranslationItems';
 
 const GameHeader: React.FC = () => {
   const { 
@@ -28,8 +28,8 @@ const GameHeader: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-2">
+        <TranslationItems />
         <LanguageSelector />
-        
         <ReadingSelectionList />
         
         {!isInChallengeMode && (

@@ -1,6 +1,5 @@
-
-import React, { createContext, useContext, useReducer } from 'react';
-import { ReadingPassage, spanishReadings, japaneseReadings } from '@/data/readings';
+import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import { ReadingPassage, spanishReadings, japaneseReadings, englishReadings } from '@/data/readings';
 import { GameContextType } from '@/types/game';
 import { gameReducer, initialGameState } from '@/reducers/gameReducer';
 import { useGameNotifications } from '@/hooks/useGameNotifications';
@@ -17,40 +16,70 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const notifications = useGameNotifications();
 
   // Get the appropriate readings based on the current language
-  const getReadings = () => {
+  const getReadings = useCallback(() => {
+    console.log('getReadings - Current language:', state.currentLanguage);
+    let readings;
     switch (state.currentLanguage) {
       case 'japanese':
-        return japaneseReadings;
+        readings = japaneseReadings;
+        break;
+      case 'english':
+        readings = englishReadings;
+        break;
       case 'spanish':
       default:
-        return spanishReadings;
+        readings = spanishReadings;
+        break;
     }
-  };
+    console.log('getReadings - Selected readings:', readings);
+    return readings;
+  }, [state.currentLanguage]);
 
-  const startGame = (passageId?: string) => {
-    const readings = getReadings();
-    let passage: ReadingPassage;
-    
-    if (passageId) {
-      const found = readings.find(p => p.id === passageId);
-      if (found) {
-        passage = found;
-      } else {
-        passage = readings[0];
+  const startGame = useCallback((passageId?: string) => {
+    try {
+      const readings = getReadings();
+      console.log('startGame - Current language:', state.currentLanguage);
+      console.log('startGame - Available readings:', readings);
+      
+      if (!readings || readings.length === 0) {
+        console.error('No readings available for the current language:', state.currentLanguage);
+        return;
       }
-    } else {
-      const randomIndex = Math.floor(Math.random() * readings.length);
-      passage = readings[randomIndex];
+
+      let passage: ReadingPassage;
+      
+      if (passageId) {
+        const found = readings.find(p => p.id === passageId);
+        if (!found) {
+          console.warn(`Passage with ID ${passageId} not found, using first passage`);
+          passage = readings[0];
+        } else {
+          passage = found;
+        }
+      } else {
+        const randomIndex = Math.floor(Math.random() * readings.length);
+        passage = readings[randomIndex];
+      }
+      
+      if (!passage) {
+        console.error('No valid passage found');
+        return;
+      }
+      
+      console.log('startGame - Selected passage:', passage);
+      dispatch({ type: 'SET_CURRENT_PASSAGE', payload: passage });
+      dispatch({ type: 'RESET_GAME' });
+    } catch (error) {
+      console.error('Error starting game:', error);
     }
-    
-    dispatch({ type: 'SET_CURRENT_PASSAGE', payload: passage });
-  };
+  }, [getReadings, state.currentLanguage, dispatch]);
 
   const changeLanguage = (language: SupportedLanguage) => {
     dispatch({ type: 'SET_LANGUAGE', payload: language });
-    setTimeout(() => {
-      startGame();
-    }, 0);
+    // Reset the game state when changing language
+    dispatch({ type: 'RESET_GAME' });
+    // Don't automatically start a new game
+    // startGame();
   };
 
   const collectWord = (word: string): string | null => {
@@ -60,15 +89,28 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     const existingWord = state.collectedWords.find(item => item.word === cleanWord);
     if (existingWord) {
-      return state.currentPassage.translations[cleanWord] || null;
+      // Find translation ignoring case
+      const translationKey = Object.keys(state.currentPassage.translations).find(
+        key => key.toLowerCase() === cleanWord
+      );
+      return translationKey ? state.currentPassage.translations[translationKey] : null;
     }
     
     if (state.collectedWords.length >= WORDS_TO_COLLECT) {
       notifications.notifyEnoughWords();
-      return state.currentPassage.translations[cleanWord] || null;
+      // Find translation ignoring case
+      const translationKey = Object.keys(state.currentPassage.translations).find(
+        key => key.toLowerCase() === cleanWord
+      );
+      return translationKey ? state.currentPassage.translations[translationKey] : null;
     }
     
-    const translation = state.currentPassage.translations[cleanWord];
+    // Find translation ignoring case
+    const translationKey = Object.keys(state.currentPassage.translations).find(
+      key => key.toLowerCase() === cleanWord
+    );
+    const translation = translationKey ? state.currentPassage.translations[translationKey] : null;
+    
     if (!translation) {
       notifications.notifyNoTranslation();
       return null;
@@ -182,12 +224,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const useTranslationItem = () => {
+    if (state.translationItemCount > 0) {
+      dispatch({ type: 'USE_TRANSLATION_ITEM' });
+      return true;
+    }
+    return false;
+  };
+
   // Initialize game when component mounts
   React.useEffect(() => {
     if (!state.currentPassage) {
       startGame();
     }
-  }, []);
+  }, [state.currentPassage, startGame]);
 
   return (
     <GameContext.Provider 
@@ -203,7 +253,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loseHeart,
         nextWord,
         changeLanguage,
-        highlightSentenceWithWord
+        highlightSentenceWithWord,
+        useTranslationItem
       }}
     >
       {children}
