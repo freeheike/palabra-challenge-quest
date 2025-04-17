@@ -373,9 +373,8 @@ const ReadingPassage: React.FC = () => {
 
   const speakSentence = async (sentenceIndex: number) => {
     try {
+      const sentence = sentences[sentenceIndex];
       setIsPlaying(sentenceIndex);
-
-      let sentence = sentences[sentenceIndex];
 
       let voiceName = "es-ES-AlvaroNeural";
       let langCode = "es-ES";
@@ -383,6 +382,9 @@ const ReadingPassage: React.FC = () => {
       if (currentLanguage === "japanese") {
         voiceName = "ja-JP-NanamiNeural";
         langCode = "ja-JP";
+      } else if (currentLanguage === "english") {
+        voiceName = "en-US-AriaNeural";
+        langCode = "en-US";
       }
 
       const ssml = `<speak version="1.0" xml:lang="${langCode}"><voice xml:lang="${langCode}" name="${voiceName}">${sentence}</voice></speak>`;
@@ -440,7 +442,7 @@ const ReadingPassage: React.FC = () => {
     }
   };
 
-  const toggleTranslation = (sentenceIndex: number) => {
+  const handleToggleTranslation = (sentenceIndex: number) => {
     if (translationItemCount <= 0 && !translatedSentences[sentenceIndex]) {
       notifyTranslationItemsDepleted();
       return; // Don't allow translation if no items left
@@ -449,7 +451,6 @@ const ReadingPassage: React.FC = () => {
     setTranslatedSentences((prev) => {
       const newTranslations = [...prev];
       if (!newTranslations[sentenceIndex]) {
-        // Only use translation item when showing a new translation
         useTranslationItem();
       }
       newTranslations[sentenceIndex] = !newTranslations[sentenceIndex];
@@ -669,7 +670,7 @@ const ReadingPassage: React.FC = () => {
                                   size="icon"
                                   className="h-6 w-6 opacity-70 hover:opacity-100 focus:ring-0 mt-1"
                                   onClick={() =>
-                                    toggleTranslation(sentenceIndex)
+                                    handleToggleTranslation(sentenceIndex)
                                   }
                                 >
                                   <Languages

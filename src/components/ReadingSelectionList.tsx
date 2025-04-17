@@ -1,31 +1,38 @@
-import React from 'react';
-import { useGame } from '@/context/GameContext';
-import { Button } from '@/components/ui/button';
-import { Book, ChevronDown } from 'lucide-react';
+import React from "react";
+import { useGame } from "@/context/GameContext";
+import { Button } from "@/components/ui/button";
+import { Book, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { ReadingPassage, spanishReadings, japaneseReadings } from '@/data/readings';
+} from "@/components/ui/dropdown-menu";
+import {
+  ReadingPassage,
+  spanishReadings,
+  japaneseReadings,
+  englishReadings,
+} from "@/data/readings";
 
 const ReadingSelectionList: React.FC = () => {
   const { startGame, currentLanguage } = useGame();
-  
+
   // Get the appropriate readings based on the current language
   const getReadings = (): ReadingPassage[] => {
     switch (currentLanguage) {
-      case 'japanese':
+      case "japanese":
         return japaneseReadings;
-      case 'spanish':
+      case "english":
+        return englishReadings;
+      case "spanish":
       default:
         return spanishReadings;
     }
   };
 
   const readings = getReadings();
-  
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,7 +44,7 @@ const ReadingSelectionList: React.FC = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[250px] bg-white">
         {readings.map((passage) => (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             key={passage.id}
             onClick={() => startGame(passage.id)}
             className="cursor-pointer"
