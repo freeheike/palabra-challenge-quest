@@ -14,7 +14,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="palabra-challenge-quest">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/word-processor" element={<WordProcessor />} />
